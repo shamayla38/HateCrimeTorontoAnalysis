@@ -1,0 +1,705 @@
+---
+title: "Hate Crimes in Toronto"
+author: "Shamayla Durrin Islam"
+date: "22 September 2024"
+output:
+  pdf_document: default
+  html: false
+
+bibliography: references.bib
+link-citations: true
+knitr:
+  opts_chunk:
+    warning: false
+    message: false
+    echo: false
+---
+
+
+## 1 Introduction
+
+```{r}
+#| echo: false
+#| warning: false
+library(here)
+library(dplyr)
+library(grid)
+library(tidyr)
+library(gridExtra)
+library(sf)
+library(ggplot2)
+
+```
+
+```{r}
+#| echo: false
+#| warning: false
+cleaned_data <- read.csv(here("data/analysis_data/cleaned_data.csv"))
+```
+
+## 2 Data
+
+## 2.1 Raw Data
+
+The dataset used in this analysis includes all verified hate crime occurrences investigated by the Hate Crime Unit by reported date since 2018. The Hate Crime categories (bias categories) include Age, Mental or Physical Disability, Race, Ethnicity, Language, Religion, Sexual Orientation, Gender, and Other Similar Factors. The dataset is provided at the offence and/or occurrence level, meaning that one occurrence may have multiple bias categories associated with it. The data does not include occurrences deemed unfounded or classified as hate incidents.
+
+The hate crimes in the dataset are categorized according to a clear legal definition:
+
+**Hate Crime:** A criminal offence committed against a person or property motivated in whole or in part by bias, prejudice, or hate based on race, national or ethnic origin, language, color, religion, sex, age, mental or physical disability, sexual orientation, or gender identity.
+
+**Hate Incident:** A non-criminal action motivated by hate against an identifiable group, such as using racial slurs.
+
+This data was obtained from Open Data Toronto through the **opendatatoronto** library (Gelfand 2022) \[\@gelfand2022\] All analysis was conducted in R (R Core Team 2023) \[\@r2023\] using packages such as **dplyr** (Wickham 2023) and **ggplot2** (Wickham 2016)\[\@wickham2016\]. The raw data features occurrences since 2018, providing valuable insight into hate crime trends in Toronto.
+
+We also utilized the Toronto neighborhoods shapefile, which was obtained from Open Data Toronto to map and visualize the geographic distribution of hate crimes across the city. This allowed for a spatial analysis of hate crimes by neighborhood \[\@opendatatoronto2022\].
+
+## 2.2 Data Cleaning
+
+Upon inspecting the dataset, it became clear that most of the data was already in good condition, as many variables were categorical in nature. To ensure consistency, we checked all the unique values within these categorical columns, such as `RACE_BIAS` and `RELIGION_BIAS`, and found no need for further standardization. Each category was consistently labeled, so no changes were necessary in terms of cleaning or formatting these values.
+
+We also searched for missing values and duplicate rows. The dataset had very few missing values, and no duplicate entries were found. The only column that contained missing values was the `LOCATION_TYPE`, where some entries lacked information about where the hate crime occurred. To simplify the analysis, these missing values were replaced with the label "Unknown" instead of `NA`.
+
+In addition, the date column `OCCURRENCE_DATE` and `REPORTED_DATE`—were originally in character format, so they were converted to proper date formats for convenience during analysis. Time columns, such as `OCCURRENCE_TIME` and `REPORTED_TIME`, were also reformatted into a standardized HH format.
+
+Finally, we verified the `ARREST_MADE` column to ensure it contained only valid values, namely "YES" and "NO". Any invalid or ambiguous entries were replaced with `NA`.
+
+These steps ensured that the dataset was clean and ready for further analysis, free of inconsistencies or issues that might have impacted the results.
+
+## 2.3 Basic Summary Statistics of the Data
+
+The summary table \@tbl-summary provides an overview of key variables from the hate crimes dataset, which spans from 2018 to 2023. The majority of incidents were reported in 2023. The most frequent occurrence locations were Streets/Roadways/Highways (287 incidents), with Division D32 handling the highest number of cases (177). A significant proportion of the crimes involved Race Bias, where Black individuals were the most frequently targeted (296 incidents), and Ethnicity Bias, with Chinese individuals being the most affected (40 incidents). Additionally, Religion Bias was notably prevalent against Jewish individuals, accounting for 485 out of 627 cases, while the most common Sexual Orientation Bias targeted 2SLGBTQ+ individuals (101 incidents).
+
+In terms of primary offences, Mischief Under \$5000 was the most common offence, appearing in 605 incidents, while arrests were made in 270 cases, representing 20% of the total. Mischief Under \$5000 is a criminal offence involving willful damage or destruction of property valued at less than \$5000, such as vandalizing a car with spray paint.The dataset also tracks bias categories related to Age, Mental or Physical Disability, and Gender, with the majority of cases lacking a specific bias in these categories. This breakdown provides insight into the nature and distribution of hate crimes in Toronto over the five-year period.
+
+| Column Name                   | Statistic                                                            |
+|------------------------|-----------------------------------------------|
+| REPORTED_YEAR                 | Most Frequent: 2023, Range: 2018–2023                                |
+| LOCATION_TYPE                 | Most Frequent: Streets/Roadways/Highway, Count: 287                  |
+| DIVISION                      | Most Frequent: D32, Count: 177                                       |
+| OCCURRENCE_YEAR               | Most Frequent: 2023, Range: 2018–2023                                |
+| AGE_BIAS                      | Total Count: 0                                                       |
+| MENTAL_OR_PHYSICAL_DISABILITY | Total Count: 3                                                       |
+| RACE_BIAS                     | Total Count: 428, Most Frequent: "Black", Count: 296                 |
+| ETHNICITY_BIAS                | Total Count: 168, Most Frequent: "Chinese", Count: 40                |
+| LANGUAGE_BIAS                 | Total Count: 3, Most Frequent: "Hindi", "Spanish", "Tamil", Count: 1 |
+| RELIGION_BIAS                 | Total Count: 627, Most Frequent: "Jewish", Count: 485                |
+| SEXUAL_ORIENTATION_BIAS       | Total Count: 197, Most Frequent: "2SLGBTQ+", Count: 101              |
+| PRIMARY_OFFENCE               | Total Count: 605, Most Frequent: "Mischief Under \$5000", Count: 605 |
+| GENDER_BIAS                   | Total Count: 78, Most Frequent: "Woman", Count: 29                   |
+| ARREST_MADE                   | Total Arrest Made: 270                                               |
+
+: Table: Summary of key variables {#tbl-summary}
+
+### 2.4 Discussion of Data Selection
+
+Often, media reports on hate crimes in Toronto tend to focus on general trends, such as an increase in anti-Semitic hate crimes by a certain percentage, without offering much depth. While they might mention which group—whether LGBTQ, Muslim, or Black—was most affected by hate crimes, they rarely provide details on the types of incidents involved. For instance, they seldom specify whether these crimes were threats, verbal assaults, vandalism, or physical violence. Similarly, there is often little analysis of the geographic distribution of these crimes, leaving unanswered questions about which neighborhoods are more prone to specific hate crimes.
+
+This dataset was chosen specifically to address these gaps in understanding. It allows for more granular analysis, helping to answer important questions such as: What types of hate crimes are committed against different groups like Muslims, Indian, Black, or Jewish people? Are these crimes more likely to involve threats, physical assaults, or vandalism?
+
+By delving into these more specific and actionable details, this dataset can help communities, law enforcement, and policymakers better understand the nature of hate crimes and more effectively address them. This kind of detailed analysis offers a clearer path to targeted interventions, which could ultimately reduce the prevalence of hate crimes and support victims more effectively
+
+## 3 Analysis
+
+### 3.1 Analysing Hate Crime by Victim Group and Bias Type
+
+```{r}
+#| echo: false
+#| warning: false
+
+library(tibble)
+
+
+race_bias <- tibble(
+  Group = c("Black", "East Asian", "South Asian", "White",  "Black, East Asian"),
+  Count = c(296, 63, 22, 19, 7)
+)
+
+
+
+sexual_orientation_bias <- tibble(
+  Group = c("2SLGBTQ+", "Gay", "Lesbian"),
+  Count = c(101, 86, 9)
+)
+
+
+
+religion_bias <- tibble(
+  Group = c("Jewish", "Muslim", "Catholic", "Sikh"),
+  Count = c(485, 107, 12, 10)
+)
+
+
+ethnicity_bias <- tibble(
+  Group = c("Chinese", "Indian", "Israeli", "Ukrainian", "Arab"),
+  Count = c(40, 33, 17, 12, 18)
+)
+
+
+```
+
+```{r, echo = FALSE, warning = FALSE}
+
+#| echo: false
+
+#| label: figone
+#| fig-cap: Figure shows the frequency of hate crimes against various communities based on biases related to religion, ethnicity, race, and sexual orientation.
+
+plot_race_bias <- ggplot(race_bias, aes(x = reorder(Group, -Count), y = Count)) +
+  geom_bar(stat = "identity", fill= "burlywood1") +
+  labs(title = "Race Bias", x = "Group", y = "Count") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        panel.background = element_rect(fill = "white"),
+        plot.title = element_text(size = 9),
+        axis.title.x = element_blank(),  # Change font size for x-axis label
+        axis.title.y = element_text(size = 8))  # Change font size for y-axis label
+
+
+
+
+plot_sexual_orientation_bias <- ggplot(sexual_orientation_bias, aes(x = reorder(Group, -Count), y = Count)) +
+  geom_bar(stat = "identity", fill = "burlywood2") +
+  labs(title = "Sexual Orientation Bias", x = "Group", y = "Count") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        panel.background = element_rect(fill = "white"),
+        plot.title = element_text(size = 9),
+        axis.title.x = element_blank(),  # Change font size for x-axis label
+        axis.title.y = element_text(size = 8))  # Change font size for y-axis label
+
+
+
+plot_ethnicity_bias <- ggplot(ethnicity_bias, aes(x = reorder(Group, -Count), y = Count)) +
+  geom_bar(stat = "identity",  fill = "burlywood3") +
+  labs(title = "Ethnicity Bias", x = "Group", y = "Count") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        panel.background = element_rect(fill = "white"),
+        plot.title = element_text(size = 9),
+        axis.title.x = element_blank(),  # Change font size for x-axis label
+        axis.title.y = element_text(size = 8))  # Change font size for y-axis label
+
+
+plot_religion_bias <- ggplot(religion_bias, aes(x = reorder(Group, -Count), y = Count)) +
+  geom_bar(stat = "identity", fill = "burlywood4") +
+  labs(title = "Religion Bias", x = "Group", y = "Count") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        panel.background = element_rect(fill = "white"),
+        plot.title = element_text(size = 9),
+        axis.title.x = element_blank(),  # Change font size for x-axis label
+        axis.title.y = element_text(size = 8))  # Change font size for y-axis label
+
+grid.arrange(plot_race_bias,plot_sexual_orientation_bias, plot_ethnicity_bias, plot_religion_bias,
+             ncol = 2,
+             top = textGrob("Hate Crime Frequency by Victim Group and Bias Type", gp = gpar(fontsize = 11)))
+
+```
+
+From the summary statistics, we observed that the most frequent hate crimes in Toronto are motivated by bias related to race, ethnicity, religion, or sexual orientation. \\ref{figone} breaks down these categories and reveals the specific groups that are most affected. In terms of race, Black communities are disproportionately targeted, with the highest count of hate crimes. This aligns with numerous studies and reports that highlight systemic racism and the disproportionate criminalization of Black individuals in Canada and elsewhere . Religious bias, particularly antisemitism, remains the most significant in the dataset, with Jewish communities experiencing the highest hate crime rates by far. This trend has been documented consistently in media reports, showing that antisemitic hate crimes have increased in recent years .
+
+Sexual orientation biases predominantly target 2SLGBTQ+ communities, especially gay and lesbian individuals, echoing findings from studies on homophobia and transphobia in urban areas . Interestingly, ethnic bias reflects a significant proportion of crimes against Chinese and Indian communities, which may correlate with a rise in xenophobic incidents, particularly during the COVID-19 pandemic when East Asian communities became frequent targets of hate.
+
+## 3.2 Investigating the most frequent Primary offences towards victim groups
+
+Understanding the types of hate crimes inflicted on different victim groups provides essential insights into the nature of targeted violence and bias in a community. By focusing on the offences committed against specific religious, racial, ethnic, or sexual orientation groups, we can analyse which groups face higher levels of violence and which experience different types of hate crimes. In this section, we analyze three figures representing crimes against Jewish, Muslim, Black, and 2SLGBTQ+ communities, as well as Indian and Chinese ethnicities. It must be noted that, in all of the following analysis, "assaults" refer to all primary offences that involve physical violence against an individual, including aggravated assault, simple assault, assault causing bodily harm etc. These types of crimes are typically categorized as violent crimes, as they involve direct harm or threats of harm to the victim, distinguishing them from non-violent offences such as property damage or verbal harassment.
+
+```{r}
+#| echo: false
+# Subsetting for Religion Bias: Jewish
+jewish_bias <- cleaned_data %>%
+  filter(RELIGION_BIAS == "Jewish")
+
+# Subsetting for Religion Bias: Muslim
+muslim_bias <- cleaned_data %>%
+  filter(RELIGION_BIAS == "Muslim")
+
+# Subsetting for Race Bias: Black
+black_bias <- cleaned_data %>%
+  filter(RACE_BIAS == "Black")
+
+# Subsetting for Sexual Orientation Bias
+sexual_orientation_bias <- cleaned_data %>%
+  filter(SEXUAL_ORIENTATION_BIAS != "None")
+
+
+```
+
+```{r}
+#| echo: false
+# Function to find top 5 Primary Offences, grouping all assault-related offenses under "Assault"
+top_5_primary_offences <- function(data) {
+  data %>%
+    # Grouping all Assault-related offenses into one category called "Assault"
+    mutate(PRIMARY_OFFENCE = case_when(
+      grepl("Assault", PRIMARY_OFFENCE) & PRIMARY_OFFENCE != "Sexual Assault" ~ "Assault",
+      TRUE ~ PRIMARY_OFFENCE
+    )) %>%
+    count(PRIMARY_OFFENCE) %>%
+    arrange(desc(n)) %>%
+    slice(1:5)
+}
+
+# Example usage for Jewish bias
+jewish_top_offences <- top_5_primary_offences(jewish_bias)
+muslim_top_offences <- top_5_primary_offences(muslim_bias)
+black_top_offences <- top_5_primary_offences(black_bias)
+sexual_orientation_top_offences <- top_5_primary_offences(sexual_orientation_bias)
+
+```
+
+```{r}
+#| echo: false
+# Make all the plots 
+plot_jewish_bias <- ggplot(jewish_top_offences, aes(x = reorder(PRIMARY_OFFENCE, -n), y = n)) +
+  geom_bar(stat = "identity", fill = "lightskyblue1") +
+  labs(title = "Religious Bias - Jewish ", x = "Primary Offence", y = "Count") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        panel.background = element_rect(fill = "white"),
+        plot.title = element_text(size = 9),
+        axis.title.x = element_blank(),
+        axis.title.y = element_text(size = 8))
+
+plot_muslim_bias <- ggplot(muslim_top_offences, aes(x = reorder(PRIMARY_OFFENCE, -n), y = n)) +
+  geom_bar(stat = "identity", fill = "lightskyblue2") +
+  labs(title = "Religious Bias - Muslim", x = "Primary Offence", y = "Count") +scale_x_discrete(labels = function(x) ifelse(x == "Mischief To Religious Property, Educational Institutions, Etc.", "Mischief To Religious Property", x))+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        panel.background = element_rect(fill = "white"),
+        plot.title = element_text(size = 9),
+        axis.title.x = element_blank(),
+        axis.title.y = element_text(size = 8))
+
+plot_black_bias <- ggplot(black_top_offences, aes(x = reorder(PRIMARY_OFFENCE, -n), y = n)) +
+  geom_bar(stat = "identity", fill = "lightskyblue3") +
+  labs(title = "Race Bias - Black", x = "Primary Offence", y = "Count") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        panel.background = element_rect(fill = "white"),
+        plot.title = element_text(size = 9),
+        axis.title.x = element_blank(),
+        axis.title.y = element_text(size = 8))
+
+plot_sexual_orientation_bias <- ggplot(sexual_orientation_top_offences, aes(x = reorder(PRIMARY_OFFENCE, -n), y = n)) +
+  geom_bar(stat = "identity", fill = "lightskyblue4") +
+  labs(title = "Sexual Orientation Bias", x = "Primary Offence", y = "Count") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        panel.background = element_rect(fill = "white"),
+        plot.title = element_text(size = 9),
+        axis.title.x = element_blank(),
+        axis.title.y = element_text(size = 8))
+```
+
+```{r}
+#| label: figtwo
+#| echo: false
+grid.arrange(plot_jewish_bias, plot_muslim_bias,
+             ncol = 2,
+             top = textGrob("Distribution of Primary Offence Inficted on Victim Groups", gp = gpar(fontsize = 11)))
+```
+
+@figtwo highlights the offences against Jewish and Muslim communities. Hate crimes against Jewish individuals are overwhelmingly categorized as "Mischief Under \$5000," a non-violent crime involving property damage. This pattern raises the question of why so many hate crimes against Jewish people take this form and whether it reflects broader societal biases or an inclination toward symbolic, property-based hate. On the other hand, hate crimes against Muslims, while fewer in number, are more likely to involve direct violence, with "Assault" being the most common offence. This contrast between the groups may suggest that hate crimes against Muslims are reported more often when they are violent, which could point to an underreporting of less severe crimes. It also highlights the harsher, more physical nature of Islamophobic hate crimes in contrast to anti-Semitic hate crimes, which tend to manifest more in property damage rather than physical harm.
+
+```{r}
+#| echo: false
+#| label: figthree
+grid.arrange(plot_black_bias, plot_sexual_orientation_bias,
+             ncol = 2,
+             top = textGrob("Distribution of Primary Offence Inflicted on Victim Groups", gp = gpar(fontsize = 11)))
+
+
+```
+
+@figthree highlights that hate crimes targeting the Black and 2SLGBTQ+ communities still show "Mischief Under \$5000" as the most common offence, similar to Jewish victims. However, both communities also experience a concerning level of violent crimes, such as assault and bodily harm. This updated data emphasizes that while property-related offences are frequent, physical violence against these groups remains alarmingly prevalent. In particular, the frequency of assaults against the 2SLGBTQ+ community signals heightened safety concerns, reflecting broader societal issues of targeted violence toward visibly marginalized groups.
+
+```{r}
+#| echo: false
+# Subsetting for Religion Bias: Jewish
+jewish_bias <- cleaned_data %>%
+  filter(RELIGION_BIAS == "Jewish")
+
+# Subsetting for Religion Bias: Muslim
+muslim_bias <- cleaned_data %>%
+  filter(RELIGION_BIAS == "Muslim")
+
+# Subsetting for Race Bias: Black
+black_bias <- cleaned_data %>%
+  filter(RACE_BIAS == "Black")
+
+# Subsetting for Sexual Orientation Bias
+sexual_orientation_bias <- cleaned_data %>%
+  filter(!is.na(SEXUAL_ORIENTATION_BIAS))
+
+# Function to find top 5 Primary Offences and count arrests
+top_5_primary_offences_with_arrests <- function(data) {
+  data %>%
+    group_by(PRIMARY_OFFENCE) %>%
+    summarise(
+      Count = n(),
+      Arrests = sum(ARREST_MADE == "YES", na.rm = TRUE)  # Counts arrests for each offence
+    ) %>%
+    arrange(desc(Count)) %>%
+    slice(1:5)
+}
+
+# Get Top 5 for each category with arrest counts
+jewish_top_offences <- top_5_primary_offences_with_arrests(jewish_bias)
+muslim_top_offences <- top_5_primary_offences_with_arrests(muslim_bias)
+black_top_offences <- top_5_primary_offences_with_arrests(black_bias)
+sexual_orientation_top_offences <- top_5_primary_offences_with_arrests(sexual_orientation_bias)
+
+
+```
+
+```{r}
+#| echo: false
+# Subsetting for Ethnicity Bias: Indian
+
+chinese_bias <- cleaned_data %>%
+  filter(ETHNICITY_BIAS == "Chinese")
+
+# Subsetting for Ethinicty Bias: Chinese 
+indian_bias <- cleaned_data %>%
+  filter(ETHNICITY_BIAS == "Indian")
+
+indian_top_offences <- top_5_primary_offences(indian_bias)
+Chinese_top_offences <- top_5_primary_offences(chinese_bias)
+```
+
+```{r}
+#| echo: false
+#| label: figfour
+plot_indian_bias <- ggplot(indian_top_offences, aes(x = reorder(PRIMARY_OFFENCE, -n), y = n)) +
+  geom_bar(stat = "identity", fill = "skyblue3") +
+  labs(title = "Ethnicity Bias - Indian", x = "Primary Offence", y = "Count") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        panel.background = element_rect(fill = "white"),
+        plot.title = element_text(size = 9),
+        axis.title.x = element_blank(),
+        axis.title.y = element_text(size = 8))
+
+plot_chinese_bias <- ggplot(Chinese_top_offences, aes(x = reorder(PRIMARY_OFFENCE, -n), y = n)) +
+  geom_bar(stat = "identity", fill = "skyblue4") +
+  labs(title = "Ethnicity Bias - Chinese", x = "Primary Offence", y = "Count") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        panel.background = element_rect(fill = "white"),
+        plot.title = element_text(size = 9),
+        axis.title.x = element_blank(),
+        axis.title.y = element_text(size = 8))
+
+grid.arrange(plot_indian_bias, plot_chinese_bias,
+             ncol = 2,
+             top = textGrob("Distribution of Primary Offence Inflicted on Victim Groups", gp = gpar(fontsize = 11)))
+```
+
+@figfour shows hate crimes against the Indian and Chinese communities. The most frequent hate crime towards both groups is assault, indicating that violent incidents disproportionately affect these communities. In fact, the number of violent hate crimes against Indians and Chinese is higher than that of Jewish individuals, the most victimized group overall. Moreover, the Chinese community also suffers from significant property-based crimes like "Mischief Under \$5000" and harassment, suggesting that anti-Asian sentiment, especially following the COVID-19 pandemic, has exacerbated both violent and non-violent hate incidents. This trend mirrors the challenges faced by Black communities, highlighting the prevalence of both verbal and physical confrontations across various ethnic and racial groups.
+
+```{r}
+#| echo: false
+#| label: figfive
+library(dplyr)
+library(ggplot2)
+
+# Subset data for different biases and filter by Assault
+assault_summary <- cleaned_data %>%
+  filter(grepl("Assault", PRIMARY_OFFENCE) & PRIMARY_OFFENCE != "Sexual Assault") %>%
+  summarise(
+    Jewish = sum(RELIGION_BIAS == "Jewish", na.rm = TRUE),
+    Muslim = sum(RELIGION_BIAS == "Muslim", na.rm = TRUE),
+    Indian = sum(ETHNICITY_BIAS == "Indian", na.rm = TRUE),
+    Chinese = sum(ETHNICITY_BIAS == "Chinese", na.rm = TRUE),
+    Sexual_Orientation = sum(SEXUAL_ORIENTATION_BIAS != "None", na.rm = TRUE)
+  )
+
+# Convert to long format for ggplot
+assault_summary_long <- assault_summary %>%
+  pivot_longer(cols = everything(), names_to = "Bias_Category", values_to = "Count")
+
+assault_summary_long <- assault_summary_long %>%
+  mutate(Bias_Category = reorder(Bias_Category, -Count))
+
+
+
+# Create the bar plot
+# Create the bar plot with the new adjustments
+plot_assault_bias <- ggplot(assault_summary_long, aes(x = Bias_Category, y = Count)) +
+  geom_bar(stat = "identity", fill = "indianred3") +
+  labs(title = "Assault Offences by Bias Category", x = "Bias Category", y = "Count") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        panel.background = element_rect(fill = "white"),
+        plot.title = element_text(size = 10),
+        axis.title.x = element_text(size = 8),
+        axis.title.y = element_text(size = 8)) +
+        scale_x_discrete(labels = c("LGBTQ","Muslim","Indian","Chinese", "Jewish"))
+
+print(plot_assault_bias)
+
+
+
+
+```
+
+@figfive illustrates that the LGBTQ+ community experiences the highest number of assault-related hate crimes compared to other groups, such as Muslims, Indians, Chinese, and Jewish individuals. Here, assaults encompass all types of physical violence, including aggravated assault, assault causing bodily harm, and common assault. The much lower assault counts for other groups could indicate different patterns of hate crimes, where other forms like harassment or vandalism are more common.
+
+## 3.3 Analysis of Yearly Trend of Hate Crimes
+
+```{r fig.width=12, fig.height=6 , echo = FALSE, warning = FALSE}
+#| echo: false
+#| label: figsix
+#| warning:  false 
+
+library(dplyr)
+library(ggplot2)
+library(lubridate)
+
+# Step 1: Extract year and quarter from the date column (OCCURRENCE_DATE)
+cleaned_data <- cleaned_data %>%
+  mutate(Year_Quarter = paste(year(OCCURRENCE_DATE), "Q", quarter(OCCURRENCE_DATE), sep = ""))
+
+# Step 2: Group by Year and Quarter, and count the number of hate crimes
+quarterly_hate_crimes <- cleaned_data %>%
+  group_by(Year_Quarter) %>%
+  summarise(Count = n())
+
+# Step 3: Create the line plot for quarterly data
+quarterly_plot <- ggplot(quarterly_hate_crimes, aes(x = Year_Quarter, y = Count, group = 1)) +
+  geom_line(color = "indianred", size = 1) +
+  geom_point(color = "indianred") +
+  labs(title = "Hate Crimes Per Quarter Over the Last 5 Years",
+       x = "Year-Quarter",
+       y = "Number of Hate Crimes") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        panel.background = element_rect(fill = "white"),
+        panel.grid.major =  element_blank(),
+        panel.grid.minor = element_line(color = "grey90"),
+        plot.title = element_text(size = 14,hjust=0.5),
+        axis.title.x = element_text(size = 10),
+        axis.title.y = element_text(size = 10))
+
+# Print the plot
+print(quarterly_plot)
+
+
+```
+
+@figsix the trend of reported hate crimes in Toronto over the past five years, segmented by quarter. The number of hate crimes fluctuates, with noticeable spikes, particularly in 2020 and 2023. There is a significant peak in mid-2020, which coincides with the global rise of racial and ethnic tensions during the pandemic. Another sharp increase is seen in 2023, reflecting a recent surge in hate crimes. This increase can be attributed to the tension created by the Israel-Hamas conflict in the last two quarters of 2023.
+
+```{r fig.width=12, fig.height=6}
+#| echo: false
+#| label: figseven
+#| warning: false
+library(dplyr)
+library(ggplot2)
+library(lubridate)
+
+# Step 1: Filter data for the required bias categories and create a Year-Quarter column
+cleaned_data <- cleaned_data %>%
+  mutate(Year_Quarter = paste(year(OCCURRENCE_DATE), "Q", quarter(OCCURRENCE_DATE), sep = ""))
+
+# Step 2: Group and summarize data for each bias category (Jewish, Muslim, Sexual Orientation, Indian, Chinese, Black)
+hate_crimes_summary <- cleaned_data %>%
+  filter(RELIGION_BIAS %in% c("Jewish", "Muslim") |
+           ETHNICITY_BIAS %in% c("Indian", "Chinese", "Black") |
+           !is.na(SEXUAL_ORIENTATION_BIAS)) %>%
+  mutate(Bias_Category = case_when(
+    RELIGION_BIAS == "Jewish" ~ "Jewish",
+    RELIGION_BIAS == "Muslim" ~ "Muslim",
+    ETHNICITY_BIAS == "Indian" ~ "Indian",
+    ETHNICITY_BIAS == "Chinese" ~ "Chinese",
+    RACE_BIAS == "Black" ~ "Black",
+    SEXUAL_ORIENTATION_BIAS != "None" ~ "LGBTQ",
+    TRUE ~ NA_character_  # This will assign NA to any rows that don't meet the conditions
+  )) %>%
+  filter(!is.na(Bias_Category)) %>%  # Remove rows with NA Bias_Category
+  group_by(Year_Quarter, Bias_Category) %>%
+  summarise(Count = n()) %>%
+  ungroup()
+
+
+# Step 3: Plot the data with different lines for each Bias Category
+plot_hate_crimes <- ggplot(hate_crimes_summary, aes(x = Year_Quarter, y = Count, color = Bias_Category, group = Bias_Category)) +
+  geom_line(size = 0.5) +
+  geom_point(size = 2) +
+  scale_color_manual(values = c("indianred3", "dodgerblue3", "darkgreen", "gold3", "purple3", "black")) + # Assign colors to each bias category
+  labs(title = "Hate Crimes Per Quarter by Bias Category",
+       x = "Year-Quarter",
+       y = "Number of Hate Crimes") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        panel.background = element_rect(fill = "white"),
+        panel.grid.major =  element_blank(),
+        panel.grid.minor = element_line(color = "grey90"),
+        plot.title = element_text(size = 14, hjust = 0.5),
+        axis.title.x = element_text(size = 10),
+        axis.title.y = element_text(size = 10))
+
+# Step 4: Print the plot
+print(plot_hate_crimes)
+
+```
+
+@figseven shows the trends in hate crimes against various bias categories over time. Jewish communities are consistently the most targeted, with a sharp spike in hate crimes towards the end of the timeline. LGBTQ individuals also experience a worrying increase, particularly towards the end of 2022, with a high number of hate crimes sustained throughout the period. Muslim and Black communities show more variability but still exhibit periodic increases. Meanwhile, hate crimes against Chinese and Indian groups remain relatively low but constant, with occasional small surges. The general upward trend for most bias categories highlights a concerning increase in hate crimes, particularly in the last quarter of the analyzed period.
+
+## 3.4 Geospatial Analysis of Hate Crime Occurrences in Toronto
+
+```{r, echo = FALSE, warning = FALSE}
+#|echo: false
+#|warning: false
+
+
+library(sf)
+shapefile_path <- shapefile_path <- "/Users/shamayladurrin/Desktop/STA304/Term_Paper_1/data/raw_data/DataShape"
+neighborhoods <- st_read(shapefile_path)
+```
+
+```{r, echo = FALSE, warning = FALSE}
+#| echo: false
+# Remove text within parentheses from the neighborhood names in cleaned_data
+cleaned_data$NEIGHBOURHOOD_158 <- gsub("\\s*\\([^\\)]+\\)", "", cleaned_data$NEIGHBOURHOOD_158)
+
+# Standardize names by removing extra spaces and converting to lowercase
+cleaned_data$NEIGHBOURHOOD_158 <- tolower(trimws(cleaned_data$NEIGHBOURHOOD_158))
+neighborhoods$AREA_NA7 <- tolower(trimws(neighborhoods$AREA_NA7))
+
+
+```
+
+
+```{r, echo = FALSE, warning = FALSE}
+#| echo: false
+cleaned_data$NEIGHBOURHOOD_158 <- recode(cleaned_data$NEIGHBOURHOOD_158,
+                                         "parkwoods-o'connor hills" = "parkwoods-o'connor hills",
+                                         "lambton baby point" = "lambton baby point",
+                                         "beechborough-greenbrook" = "beechborough-greenbrook",
+                                         "brookhaven-amesbury" = "brookhaven-amesbury",
+                                         "willowridge-martingrove-richview" = "willowridge-martingrove-richview",
+                                         "rexdale-kipling" = "rexdale-kipling",
+                                         "thistletown-beaumond heights" = "thistletown-beaumond heights",
+                                         "mount olive-silverstone-jamestown" = "mount olive-silverstone-jamestown"
+)
+
+```
+
+```{r, echo = FALSE, warning = FALSE}
+#| echo: false
+cleaned_data$NEIGHBOURHOOD_158 <- tolower(gsub("[^[:alnum:] ]", "", cleaned_data$NEIGHBOURHOOD_158))
+neighborhoods$AREA_NA7 <- tolower(gsub("[^[:alnum:] ]", "", neighborhoods$AREA_NA7))
+
+```
+
+```{r, echo = FALSE, warning = FALSE}
+#| echo: false
+# Create a new dataset without "nsa" neighborhoods
+filtered_cleaned_data <- cleaned_data %>%
+  filter(NEIGHBOURHOOD_158 != "nsa")
+
+```
+
+```{r, echo = FALSE, warning = FALSE}
+#| echo: false
+setdiff(unique(filtered_cleaned_data$NEIGHBOURHOOD_158), unique(neighborhoods$AREA_NA7))
+
+# Check for names in neighborhoods that are not in cleaned_data
+setdiff(unique(neighborhoods$AREA_NA7), unique(filtered_cleaned_data$NEIGHBOURHOOD_158))
+```
+
+```{r, echo = FALSE, warning = FALSE}
+#| echo: false
+crime_count_by_neighbourhood <- filtered_cleaned_data %>%
+  group_by(NEIGHBOURHOOD_158) %>%
+  summarise(Crime_Count = n())
+# Join the crime data with the neighborhood shapefile
+map_data <- left_join(neighborhoods, crime_count_by_neighbourhood, 
+                      by = c("AREA_NA7" = "NEIGHBOURHOOD_158"))
+
+# Replace NA values in Crime_Count with 0
+map_data$Crime_Count[is.na(map_data$Crime_Count)] <- 0
+```
+
+```{r fig.width=10, fig.height=6}
+#| echo: false
+#| label: TheMap
+#| warning: false
+ggplot(data = map_data) +
+  geom_sf(aes(fill = Crime_Count), color = "grey") +
+  scale_fill_gradient(low = "lightblue", high = "red", name = "Hate Crimes") +
+  labs(title = "Distribution of Hate Crimes Across Toronto Neighborhoods") +
+  theme_minimal() +
+  
+  # Manually adding region labels
+  geom_text(aes(x = -79.38, y = 43.65, label = "Old Toronto"), size = 3, color = "black") +
+  geom_text(aes(x = -79.55, y = 43.64, label = "Etobicoke"), size = 3, color = "black") +
+  geom_text(aes(x = -79.46, y = 43.685, label = "York"), size = 3, color = "black") +
+  geom_text(aes(x = -79.42, y = 43.75, label = "North York"), size = 3, color = "black") +
+  geom_text(aes(x = -79.34, y = 43.7, label = "East York"), size = 3, color = "black") +
+  geom_text(aes(x = -79.20, y = 43.80, label = "Scarborough"), size = 3, color = "black")
+
+```
+
+@TheMap displays the distribution of hate crimes across different neighborhoods in Toronto. It clearly shows that certain areas, such as Old Toronto and parts of North York, experience a higher concentration of hate crimes compared to others. The color gradient, ranging from blue to red, indicates the frequency of reported hate crimes, with red signifying neighborhoods that have seen up to 50 hate crimes in the reporting period. Areas like Etobicoke and Scarborough appear to have fewer reported incidents. This visual insight helps understand geographical disparities in hate crime occurrences, which could be useful for targeting community outreach, resource allocation, and law enforcement strategies. These hotspots suggest that urban centers with higher population density might be more prone to hate crimes, an observation supported by studies linking hate crimes to urbanization .
+
+```{r fig.width=10, fig.height=6}
+#| echo: false
+#| label: TheMap2
+#| warning: false
+# Create the summarized data for sexual orientation bias
+crime_count_by_neighbourhood_so <- filtered_cleaned_data %>%
+  filter(SEXUAL_ORIENTATION_BIAS != "None") %>%
+  group_by(NEIGHBOURHOOD_158) %>%
+  summarise(Crime_Count = n())
+
+# Join the crime data with the neighborhood shapefile
+map_data_so <- left_join(neighborhoods, crime_count_by_neighbourhood_so, 
+                         by = c("AREA_NA7" = "NEIGHBOURHOOD_158"))
+
+# Replace NA values in Crime_Count with 0
+map_data_so$Crime_Count[is.na(map_data_so$Crime_Count)] <- 0
+
+# Plot the data
+ggplot(data = map_data_so) +
+  geom_sf(aes(fill = Crime_Count), color = "black") +
+  scale_fill_gradient(low = "lightblue", high = "red", name = "Hate Crimes (Sexual Orientation Bias)") +
+  labs(title = "Distribution of Sexual Orientation Bias Hate Crimes Across Toronto Neighborhoods") +
+  theme_minimal() +
+  
+  # Manually adding region labels
+  geom_text(aes(x = -79.38, y = 43.65, label = "Old Toronto"), size = 3, color = "black") +
+  geom_text(aes(x = -79.55, y = 43.64, label = "Etobicoke"), size = 3, color = "black") +
+  geom_text(aes(x = -79.46, y = 43.685, label = "York"), size = 3, color = "black") +
+  geom_text(aes(x = -79.42, y = 43.75, label = "North York"), size = 3, color = "black") +
+  geom_text(aes(x = -79.34, y = 43.7, label = "East York"), size = 3, color = "black") +
+  geom_text(aes(x = -79.20, y = 43.80, label = "Scarborough"), size = 3, color = "black")
+
+```
+
+@TheMap2 represents the spatial distribution of hate crimes driven by sexual orientation bias across Toronto neighborhoods. It shows a higher incidence of such crimes in central areas like Old Toronto, with some activity extending to neighborhoods in North York, indicating these regions as focal points for hate crimes targeting the LGBTQ+ community.
+
+```{r fig.width=10, fig.height=6}
+#| echo: false
+#| label: TheMap3
+#| warning: false
+# Create the summarized data for Muslim religious bias
+crime_count_by_neighbourhood_mu <- filtered_cleaned_data %>%
+  filter(RELIGION_BIAS == "Muslim") %>%
+  group_by(NEIGHBOURHOOD_158) %>%
+  summarise(Crime_Count = n())
+
+# Join the crime data with the neighborhood shapefile
+map_data_mu <- left_join(neighborhoods, crime_count_by_neighbourhood_mu, 
+                         by = c("AREA_NA7" = "NEIGHBOURHOOD_158"))
+
+# Replace NA values in Crime_Count with 0
+map_data_mu$Crime_Count[is.na(map_data_mu$Crime_Count)] <- 0
+
+# Plot the data specifically for Muslim bias
+ggplot(data = map_data_mu) +
+  geom_sf(aes(fill = Crime_Count), color = "black") +
+  scale_fill_gradient(low = "lightblue", high = "red", name = "Hate Crime Occurrences (Muslim Bias)") +
+  labs(title = "Distribution of Hate Crimes Against Muslims Across Toronto Neighborhoods") +
+  theme_minimal() +
+  
+  # Manually adding region labels
+  geom_text(aes(x = -79.38, y = 43.65, label = "Old Toronto"), size = 3, color = "black") +
+  geom_text(aes(x = -79.55, y = 43.64, label = "Etobicoke"), size = 3, color = "black") +
+  geom_text(aes(x = -79.46, y = 43.685, label = "York"), size = 3, color = "black") +
+  geom_text(aes(x = -79.42, y = 43.75, label = "North York"), size = 3, color = "black") +
+  geom_text(aes(x = -79.34, y = 43.7, label = "East York"), size = 3, color = "black") +
+  geom_text(aes(x = -79.20, y = 43.80, label = "Scarborough"), size = 3, color = "black")
+
+```
+
+
+@TheMap3 shows that areas like Old Toronto, North York, and parts of Etobicoke have higher occurrences of violent crimes towards Muslims, with some neighborhoods showing up to six incidents. This spatial distribution suggests potential hotspots for religious bias-motivated hate crimes within the city.

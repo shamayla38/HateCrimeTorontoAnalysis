@@ -2,9 +2,9 @@
 title: "Hate Crimes in Toronto"
 author: "Shamayla Durrin Islam"
 date: "22 September 2024"
-output:
-  pdf_document: default
-  html: false
+output: 
+  pdf_document:
+    pandoc_args: ["--citeproc"]
 
 bibliography: references.bib
 link-citations: true
@@ -15,8 +15,17 @@ knitr:
     echo: false
 ---
 
+## Abstract 
+
+Hate crimes pose a significant threat to the social fabric of urban communities. This paper examines the occurrence of hate crimes in Toronto from 2018 to 2023, analyzing both the frequency and nature of these crimes across racial, ethnic, religious, and sexual orientation biases. The data, sourced from the Toronto Police Service's Hate Crime Unit, is explored through statistical summaries and geospatial analysis to identify key trends and hotspots. Findings reveal that Jewish individuals suffer the highest number of hate crimes, though these incidents are generally less violent, often involving property damage, compared to the more violent offenses directed at Black, Muslim, and 2SLGBTQ+ communities.
+
+A geospatial analysis shows that central areas such as Old Toronto and parts of North York experience a higher concentration of hate crimes, with specific regions also showing elevated incidents against particular groups. For example, 2SLGBTQ+ individuals are disproportionately targeted in downtown Toronto, while neighborhoods like North York and Scarborough see more hate crimes against Muslim and Black communities. Additionally, we observe spikes in the frequency of hate crimes during certain periods, notably in 2020 and 2023, suggesting external socio-political events may influence these trends.
 
 ## 1 Introduction
+
+Hate crimes are a form of violence that can deeply affect not only the direct victims but also entire communities, perpetuating fear, division, and social unrest. In urban centers like Toronto, hate crimes have become an increasingly pressing issue, reflecting broader societal tensions along lines of race, religion, sexual orientation, and ethnicity. This paper seeks to examine the nature and distribution of hate crimes in Toronto from 2018 to 2023, using data obtained from the Toronto Police Service's Hate Crime Unit. The analysis is structured to provide a comprehensive view of the victims, the types of offenses committed, and the neighborhoods most affected by hate-motivated violence.
+
+The data used in this study covers a broad range of biases, including those motivated by race, ethnicity, religion, sexual orientation, and other identity factors. In recent years, hate crimes against racial and religious minorities have gained significant attention in both public discourse and policy discussions. This analysis aims to delve deeper into these trends, providing detailed insights into the specific groups targeted and the offenses committed against them. By exploring not just the frequency but also the geographic distribution and nature of these crimes, this paper will offer valuable insights for community organizations, law enforcement agencies, and policymakers. The ultimate goal is to contribute to a broader understanding of how hate crimes manifest in Toronto and to suggest potential strategies for addressing this ongoing issue.
 
 ```{r}
 #| echo: false
@@ -49,9 +58,9 @@ The hate crimes in the dataset are categorized according to a clear legal defini
 
 **Hate Incident:** A non-criminal action motivated by hate against an identifiable group, such as using racial slurs.
 
-This data was obtained from Open Data Toronto through the **opendatatoronto** library (Gelfand 2022) \[\@gelfand2022\] All analysis was conducted in R (R Core Team 2023) \[\@r2023\] using packages such as **dplyr** (Wickham 2023) and **ggplot2** (Wickham 2016)\[\@wickham2016\]. The raw data features occurrences since 2018, providing valuable insight into hate crime trends in Toronto.
+This data was obtained from Open Data Toronto through the opendatatoronto library (Gelfand 2022) [@gelfand2022]. All analysis was conducted in R (R Core Team 2023) [@r2023] using packages such as dplyr (Wickham 2023) [@wickham2023] and ggplot2 (Wickham 2016) [@wickham2016]. The raw data features occurrences since 2018, providing valuable insight into hate crime trends in Toronto.
 
-We also utilized the Toronto neighborhoods shapefile, which was obtained from Open Data Toronto to map and visualize the geographic distribution of hate crimes across the city. This allowed for a spatial analysis of hate crimes by neighborhood \[\@opendatatoronto2022\].
+We also utilized the Toronto neighborhoods shapefile, which was obtained from Open Data Toronto to map and visualize the geographic distribution of hate crimes across the city. This allowed for a spatial analysis of hate crimes by neighborhood (Open Data Toronto 2022) [@opendatatoronto2022].
 
 ## 2.2 Data Cleaning
 
@@ -71,22 +80,22 @@ The summary table \@tbl-summary provides an overview of key variables from the h
 
 In terms of primary offences, Mischief Under \$5000 was the most common offence, appearing in 605 incidents, while arrests were made in 270 cases, representing 20% of the total. Mischief Under \$5000 is a criminal offence involving willful damage or destruction of property valued at less than \$5000, such as vandalizing a car with spray paint.The dataset also tracks bias categories related to Age, Mental or Physical Disability, and Gender, with the majority of cases lacking a specific bias in these categories. This breakdown provides insight into the nature and distribution of hate crimes in Toronto over the five-year period.
 
-| Column Name                   | Statistic                                                            |
-|------------------------|-----------------------------------------------|
-| REPORTED_YEAR                 | Most Frequent: 2023, Range: 2018–2023                                |
-| LOCATION_TYPE                 | Most Frequent: Streets/Roadways/Highway, Count: 287                  |
-| DIVISION                      | Most Frequent: D32, Count: 177                                       |
-| OCCURRENCE_YEAR               | Most Frequent: 2023, Range: 2018–2023                                |
-| AGE_BIAS                      | Total Count: 0                                                       |
-| MENTAL_OR_PHYSICAL_DISABILITY | Total Count: 3                                                       |
-| RACE_BIAS                     | Total Count: 428, Most Frequent: "Black", Count: 296                 |
-| ETHNICITY_BIAS                | Total Count: 168, Most Frequent: "Chinese", Count: 40                |
-| LANGUAGE_BIAS                 | Total Count: 3, Most Frequent: "Hindi", "Spanish", "Tamil", Count: 1 |
-| RELIGION_BIAS                 | Total Count: 627, Most Frequent: "Jewish", Count: 485                |
-| SEXUAL_ORIENTATION_BIAS       | Total Count: 197, Most Frequent: "2SLGBTQ+", Count: 101              |
-| PRIMARY_OFFENCE               | Total Count: 605, Most Frequent: "Mischief Under \$5000", Count: 605 |
-| GENDER_BIAS                   | Total Count: 78, Most Frequent: "Woman", Count: 29                   |
-| ARREST_MADE                   | Total Arrest Made: 270                                               |
+| Column Name | Statistic |
+|-------------------------|-----------------------------------------------|
+| REPORTED_YEAR | Most Frequent: 2023, Range: 2018–2023 |
+| LOCATION_TYPE | Most Frequent: Streets/Roadways/Highway, Count: 287 |
+| DIVISION | Most Frequent: D32, Count: 177 |
+| OCCURRENCE_YEAR | Most Frequent: 2023, Range: 2018–2023 |
+| AGE_BIAS | Total Count: 0 |
+| MENTAL_OR_PHYSICAL_DISABILITY | Total Count: 3 |
+| RACE_BIAS | Total Count: 428, Most Frequent: "Black", Count: 296 |
+| ETHNICITY_BIAS | Total Count: 168, Most Frequent: "Chinese", Count: 40 |
+| LANGUAGE_BIAS | Total Count: 3, Most Frequent: "Hindi", "Spanish", "Tamil", Count: 1 |
+| RELIGION_BIAS | Total Count: 627, Most Frequent: "Jewish", Count: 485 |
+| SEXUAL_ORIENTATION_BIAS | Total Count: 197, Most Frequent: "2SLGBTQ+", Count: 101 |
+| PRIMARY_OFFENCE | Total Count: 605, Most Frequent: "Mischief Under \$5000", Count: 605 |
+| GENDER_BIAS | Total Count: 78, Most Frequent: "Woman", Count: 29 |
+| ARREST_MADE | Total Arrest Made: 270 |
 
 : Table: Summary of key variables {#tbl-summary}
 
@@ -137,12 +146,13 @@ ethnicity_bias <- tibble(
 
 ```
 
-```{r, echo = FALSE, warning = FALSE}
+```{r}
 
 #| echo: false
-
+#| warning: false
 #| label: figone
-#| fig-cap: Figure shows the frequency of hate crimes against various communities based on biases related to religion, ethnicity, race, and sexual orientation.
+#| fig-cap: "Figure shows the frequency of hate crimes against various communities based on biases related to religion, ethnicity, race, and sexual orientation."
+
 
 plot_race_bias <- ggplot(race_bias, aes(x = reorder(Group, -Count), y = Count)) +
   geom_bar(stat = "identity", fill= "burlywood1") +
@@ -192,7 +202,7 @@ grid.arrange(plot_race_bias,plot_sexual_orientation_bias, plot_ethnicity_bias, p
 
 ```
 
-From the summary statistics, we observed that the most frequent hate crimes in Toronto are motivated by bias related to race, ethnicity, religion, or sexual orientation. \\ref{figone} breaks down these categories and reveals the specific groups that are most affected. In terms of race, Black communities are disproportionately targeted, with the highest count of hate crimes. This aligns with numerous studies and reports that highlight systemic racism and the disproportionate criminalization of Black individuals in Canada and elsewhere . Religious bias, particularly antisemitism, remains the most significant in the dataset, with Jewish communities experiencing the highest hate crime rates by far. This trend has been documented consistently in media reports, showing that antisemitic hate crimes have increased in recent years .
+From the summary statistics, we observed that the most frequent hate crimes in Toronto are motivated by bias related to race, ethnicity, religion, or sexual orientation. @figone breaks down these categories and reveals the specific groups that are most affected. In terms of race, Black communities are disproportionately targeted, with the highest count of hate crimes. This aligns with numerous studies and reports that highlight systemic racism and the disproportionate criminalization of Black individuals in Canada and elsewhere . Religious bias, particularly antisemitism, remains the most significant in the dataset, with Jewish communities experiencing the highest hate crime rates by far. This trend has been documented consistently in media reports, showing that antisemitic hate crimes have increased in recent years .
 
 Sexual orientation biases predominantly target 2SLGBTQ+ communities, especially gay and lesbian individuals, echoing findings from studies on homophobia and transphobia in urban areas . Interestingly, ethnic bias reflects a significant proportion of crimes against Chinese and Indian communities, which may correlate with a rise in xenophobic incidents, particularly during the COVID-19 pandemic when East Asian communities became frequent targets of hate.
 
@@ -287,6 +297,7 @@ plot_sexual_orientation_bias <- ggplot(sexual_orientation_top_offences, aes(x = 
 ```{r}
 #| label: figtwo
 #| echo: false
+
 grid.arrange(plot_jewish_bias, plot_muslim_bias,
              ncol = 2,
              top = textGrob("Distribution of Primary Offence Inficted on Victim Groups", gp = gpar(fontsize = 11)))
@@ -297,6 +308,7 @@ grid.arrange(plot_jewish_bias, plot_muslim_bias,
 ```{r}
 #| echo: false
 #| label: figthree
+
 grid.arrange(plot_black_bias, plot_sexual_orientation_bias,
              ncol = 2,
              top = textGrob("Distribution of Primary Offence Inflicted on Victim Groups", gp = gpar(fontsize = 11)))
@@ -557,7 +569,6 @@ neighborhoods$AREA_NA7 <- tolower(trimws(neighborhoods$AREA_NA7))
 
 ```
 
-
 ```{r, echo = FALSE, warning = FALSE}
 #| echo: false
 cleaned_data$NEIGHBOURHOOD_158 <- recode(cleaned_data$NEIGHBOURHOOD_158,
@@ -611,7 +622,7 @@ map_data$Crime_Count[is.na(map_data$Crime_Count)] <- 0
 
 ```{r fig.width=10, fig.height=6}
 #| echo: false
-#| label: TheMap
+#| label: themap
 #| warning: false
 ggplot(data = map_data) +
   geom_sf(aes(fill = Crime_Count), color = "grey") +
@@ -629,11 +640,11 @@ ggplot(data = map_data) +
 
 ```
 
-@TheMap displays the distribution of hate crimes across different neighborhoods in Toronto. It clearly shows that certain areas, such as Old Toronto and parts of North York, experience a higher concentration of hate crimes compared to others. The color gradient, ranging from blue to red, indicates the frequency of reported hate crimes, with red signifying neighborhoods that have seen up to 50 hate crimes in the reporting period. Areas like Etobicoke and Scarborough appear to have fewer reported incidents. This visual insight helps understand geographical disparities in hate crime occurrences, which could be useful for targeting community outreach, resource allocation, and law enforcement strategies. These hotspots suggest that urban centers with higher population density might be more prone to hate crimes, an observation supported by studies linking hate crimes to urbanization .
+@themap displays the distribution of hate crimes across different neighborhoods in Toronto. It clearly shows that certain areas, such as Old Toronto and parts of North York, experience a higher concentration of hate crimes compared to others. The color gradient, ranging from blue to red, indicates the frequency of reported hate crimes, with red signifying neighborhoods that have seen up to 50 hate crimes in the reporting period. Areas like Etobicoke and Scarborough appear to have fewer reported incidents. This visual insight helps understand geographical disparities in hate crime occurrences, which could be useful for targeting community outreach, resource allocation, and law enforcement strategies. These hotspots suggest that urban centers with higher population density might be more prone to hate crimes, an observation supported by studies linking hate crimes to urbanization .
 
 ```{r fig.width=10, fig.height=6}
 #| echo: false
-#| label: TheMap2
+#| label: themap2
 #| warning: false
 # Create the summarized data for sexual orientation bias
 crime_count_by_neighbourhood_so <- filtered_cleaned_data %>%
@@ -665,11 +676,11 @@ ggplot(data = map_data_so) +
 
 ```
 
-@TheMap2 represents the spatial distribution of hate crimes driven by sexual orientation bias across Toronto neighborhoods. It shows a higher incidence of such crimes in central areas like Old Toronto, with some activity extending to neighborhoods in North York, indicating these regions as focal points for hate crimes targeting the LGBTQ+ community.
+@themap2 represents the spatial distribution of hate crimes driven by sexual orientation bias across Toronto neighborhoods. It shows a higher incidence of such crimes in central areas like Old Toronto, with some activity extending to neighborhoods in North York, indicating these regions as focal points for hate crimes targeting the LGBTQ+ community.
 
 ```{r fig.width=10, fig.height=6}
 #| echo: false
-#| label: TheMap3
+#| label: themap3
 #| warning: false
 # Create the summarized data for Muslim religious bias
 crime_count_by_neighbourhood_mu <- filtered_cleaned_data %>%
@@ -701,5 +712,4 @@ ggplot(data = map_data_mu) +
 
 ```
 
-
-@TheMap3 shows that areas like Old Toronto, North York, and parts of Etobicoke have higher occurrences of violent crimes towards Muslims, with some neighborhoods showing up to six incidents. This spatial distribution suggests potential hotspots for religious bias-motivated hate crimes within the city.
+@themap3 shows that areas like Old Toronto, North York, and parts of Etobicoke have higher occurrences of violent crimes towards Muslims, with some neighborhoods showing up to six incidents. This spatial distribution suggests potential hotspots for religious bias-motivated hate crimes within the city.

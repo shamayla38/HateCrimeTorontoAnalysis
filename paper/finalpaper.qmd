@@ -58,7 +58,7 @@ The hate crimes in the dataset are categorized according to a clear legal defini
 
 **Hate Incident:** A non-criminal action motivated by hate against an identifiable group, such as using racial slurs.
 
-This data was obtained from Open Data Toronto through the opendatatoronto library (Gelfand 2022) [@gelfand2022]. All analysis was conducted in R (R Core Team 2023) [@r2023] using packages such as dplyr (Wickham 2023) [@wickham2023] and ggplot2 (Wickham 2016) [@wickham2016]. The raw data features occurrences since 2018, providing valuable insight into hate crime trends in Toronto.
+This data was obtained from Open Data Toronto through the opendatatoronto library  [@gelfand2022]. All analysis was conducted in R [@r2023] using packages such as dplyr  [@wickham2023] and ggplot2 [@wickham2016]. The raw data features occurrences since 2018, providing valuable insight into hate crime trends in Toronto.
 
 We also utilized the Toronto neighborhoods shapefile, which was obtained from Open Data Toronto to map and visualize the geographic distribution of hate crimes across the city. This allowed for a spatial analysis of hate crimes by neighborhood (Open Data Toronto 2022) [@opendatatoronto2022].
 
@@ -76,7 +76,7 @@ These steps ensured that the dataset was clean and ready for further analysis, f
 
 ## 2.3 Basic Summary Statistics of the Data
 
-The summary table \@tbl-summary provides an overview of key variables from the hate crimes dataset, which spans from 2018 to 2023. The majority of incidents were reported in 2023. The most frequent occurrence locations were Streets/Roadways/Highways (287 incidents), with Division D32 handling the highest number of cases (177). A significant proportion of the crimes involved Race Bias, where Black individuals were the most frequently targeted (296 incidents), and Ethnicity Bias, with Chinese individuals being the most affected (40 incidents). Additionally, Religion Bias was notably prevalent against Jewish individuals, accounting for 485 out of 627 cases, while the most common Sexual Orientation Bias targeted 2SLGBTQ+ individuals (101 incidents).
+The summary table @tbl-summary provides an overview of key variables from the hate crimes dataset, which spans from 2018 to 2023. The majority of incidents were reported in 2023. The most frequent occurrence locations were Streets/Roadways/Highways (287 incidents), with Division D32 handling the highest number of cases (177). A significant proportion of the crimes involved Race Bias, where Black individuals were the most frequently targeted (296 incidents), and Ethnicity Bias, with Chinese individuals being the most affected (40 incidents). Additionally, Religion Bias was notably prevalent against Jewish individuals, accounting for 485 out of 627 cases, while the most common Sexual Orientation Bias targeted 2SLGBTQ+ individuals (101 incidents).
 
 In terms of primary offences, Mischief Under \$5000 was the most common offence, appearing in 605 incidents, while arrests were made in 270 cases, representing 20% of the total. Mischief Under \$5000 is a criminal offence involving willful damage or destruction of property valued at less than \$5000, such as vandalizing a car with spray paint.The dataset also tracks bias categories related to Age, Mental or Physical Disability, and Gender, with the majority of cases lacking a specific bias in these categories. This breakdown provides insight into the nature and distribution of hate crimes in Toronto over the five-year period.
 
@@ -553,8 +553,7 @@ print(plot_hate_crimes)
 
 
 library(sf)
-shapefile_path <- shapefile_path <- "/Users/shamayladurrin/Desktop/STA304/Term_Paper_1/data/raw_data/DataShape"
-neighborhoods <- st_read(shapefile_path)
+neighborhoods <- (here("data/raw_data/DataShape"))
 ```
 
 ```{r, echo = FALSE, warning = FALSE}

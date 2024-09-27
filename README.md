@@ -15,22 +15,6 @@ Cleaning and Analysis: The dataset is cleaned and analyzed to produce summary st
 Final Paper: A detailed report summarizing the findings, with graphs and cross-references, formatted into a PDF using Quarto.
 
 
-Folders Structure:
-bash
-
-├── data
-│   ├── raw_data
-│   │   └── unedited_data.csv   # Raw data downloaded from Open Data Toronto
-│   ├── analysis_data
-│   │   └── cleaned_data.csv    # Cleaned dataset used for analysis
-├── paper
-│   └── paper.qmd               # Quarto file for generating the final report
-├── scripts
-│   ├── 00-simulate_data.R      # Script to simulate the data structure
-│   ├── 01-download_data.R      # Script to download the dataset
-│   ├── 02-clean_data.R         # Script to clean the data
-├── references.bib              # Bibliography file for references
-└── README.md                   # Project overview and details
 
 Instructions for Reproducibility:
 
@@ -50,7 +34,7 @@ knitr
 gt
 
 Usage of LLM:
-This project was partially assisted by ChattGPT for improving R codes and structuring the report. 
+This project was partially assisted by ChattGPT for improving R codes, rewriting some paragraphs, debugging. 
 
 License:
 This project is licensed under the MIT License.

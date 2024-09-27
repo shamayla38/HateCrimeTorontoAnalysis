@@ -675,8 +675,8 @@ map_data_so$Crime_Count[is.na(map_data_so$Crime_Count)] <- 0
 
 # Plot the data
 ggplot(data = map_data_so) +
-  geom_sf(aes(fill = Crime_Count), color = "black") +
-  scale_fill_gradient(low = "lightblue", high = "red", name = "Hate Crimes Occurences") +
+  geom_sf(aes(fill = Crime_Count), color = "white") +
+  scale_fill_gradient(low = "lightblue", high = "red", name = "Hate Crimes") +
   labs(title = "Distribution of Homophobic Hate Crimes Across Toronto Neighborhoods", x = "Longitude", y = "Latitude") +
   theme_minimal() +
   
@@ -710,8 +710,8 @@ map_data_mu$Crime_Count[is.na(map_data_mu$Crime_Count)] <- 0
 
 # Plot the data specifically for Muslim bias
 ggplot(data = map_data_mu) +
-  geom_sf(aes(fill = Crime_Count), color = "black") +
-  scale_fill_gradient(low = "lightblue", high = "red", name = "Hate Crime Occurences") +
+  geom_sf(aes(fill = Crime_Count), color = "white") +
+  scale_fill_gradient(low = "lightblue", high = "red", name = "Hate Crimes") +
   labs(title = "Distribution of Hate Crimes Against Muslims Across Toronto Neighborhoods", x = "Longitude", y = "Latitude") +
   theme_minimal() +
   
@@ -745,8 +745,8 @@ map_data_mu$Crime_Count[is.na(map_data_mu$Crime_Count)] <- 0
 
 # Plot the data specifically for Muslim bias
 ggplot(data = map_data_mu) +
-  geom_sf(aes(fill = Crime_Count), color = "black") +
-  scale_fill_gradient(low = "lightblue", high = "red", name = "Hate Crime Occurrences") +
+  geom_sf(aes(fill = Crime_Count), color = "white") +
+  scale_fill_gradient(low = "lightblue", high = "red", name = "Hate Crimes") +
   labs(title = "Distribution of Hate Crimes Against Black People Across Toronto Neighborhoods", x = "Longitude", y = "Latitude") +
   theme_minimal() +
   
@@ -782,7 +782,7 @@ map_data_mu$Crime_Count[is.na(map_data_mu$Crime_Count)] <- 0
 
 # Plot the data specifically for Muslim bias
 ggplot(data = map_data_mu) +
-  geom_sf(aes(fill = Crime_Count), color = "black") +
+  geom_sf(aes(fill = Crime_Count), color = "white") +
   scale_fill_gradient(low = "lightblue", high = "red", name = "Hate Crime Occurences") +
   labs(title = "Distribution of Hate Crimes Against Jewish Across Toronto Neighborhoods", x = "Longitude", y = "Latitude") +
   theme_minimal() +

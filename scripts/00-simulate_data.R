@@ -1,3 +1,18 @@
+#### Preamble ####
+# Purpose: Simulate a dataset based on the distribution of hate crime records in Toronto.
+# Author: Shamayla Durrin
+# Date: 26 September 2024
+# Contact: shamayla.islam@mail.utoronto.ca
+# License: MIT
+# Pre-requisites: 
+# - The `dplyr` package must be installed.
+# - Access to the actual dataset "data/raw_data/unedited_data.csv" is required.
+# - Ensure the working directory is set to the appropriate project folder.
+# Any other information needed:
+# - This script generates a simulated dataset using proportions of bias-related columns
+# from the actual data to retain the original distribution while anonymizing records.
+
+
 # Load necessary libraries
 library(dplyr)
 

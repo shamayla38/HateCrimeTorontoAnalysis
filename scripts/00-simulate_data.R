@@ -4,7 +4,7 @@
 # Date: 26 September 2024
 # Contact: shamayla.islam@mail.utoronto.ca
 # License: MIT
-# Pre-requisites: 
+# Pre-requisites:
 # - The `dplyr` package must be installed.
 # - Access to the actual dataset "data/raw_data/unedited_data.csv" is required.
 # - Ensure the working directory is set to the appropriate project folder.
@@ -58,48 +58,37 @@ primary_offence_proportions <- prop.table(table(actual_data$PRIMARY_OFFENCE))
 arrest_made_proportions <- prop.table(table(actual_data$ARREST_MADE))
 
 # Now, simulate the new dataset based on the actual data distributions
-set.seed(123)  # For reproducibility
+set.seed(123) # For reproducibility
 
 simulated_data <- data.frame(
-  EVENT_UNIQUE_ID = paste0("GO-", sample(201800000:201899999, n, replace = TRUE)),  # Random offense numbers
-  
-  OCCURRENCE_YEAR = sample(2018:2020, n, replace = TRUE),  # Randomly choose year (modify if you need real distribution)
-  
-  OCCURRENCE_DATE = sample(seq(as.Date("2018/01/01"), as.Date("2020/12/31"), by = "day"), n, replace = TRUE),  # Random date within range
-  
-  OCCURRENCE_TIME = sample(0:2359, n, replace = TRUE),  # Random time of day
-  
-  REPORTED_YEAR = sample(2018:2020, n, replace = TRUE),  # Random year (adjust if needed)
-  
-  REPORTED_DATE = sample(seq(as.Date("2018/01/01"), as.Date("2020/12/31"), by = "day"), n, replace = TRUE),  # Random reported date
-  
-  REPORTED_TIME = sample(0:2359, n, replace = TRUE),  # Random reported time
-  
-  DIVISION = sample(paste0("D", sample(10:55, n, replace = TRUE))),  # Random division codes
-  
+  EVENT_UNIQUE_ID = paste0("GO-", sample(201800000:201899999, n, replace = TRUE)), # Random offense numbers
+
+  OCCURRENCE_YEAR = sample(2018:2020, n, replace = TRUE), # Randomly choose year (modify if you need real distribution)
+
+  OCCURRENCE_DATE = sample(seq(as.Date("2018/01/01"), as.Date("2020/12/31"), by = "day"), n, replace = TRUE), # Random date within range
+
+  OCCURRENCE_TIME = sample(0:2359, n, replace = TRUE), # Random time of day
+
+  REPORTED_YEAR = sample(2018:2020, n, replace = TRUE), # Random year (adjust if needed)
+
+  REPORTED_DATE = sample(seq(as.Date("2018/01/01"), as.Date("2020/12/31"), by = "day"), n, replace = TRUE), # Random reported date
+
+  REPORTED_TIME = sample(0:2359, n, replace = TRUE), # Random reported time
+
+  DIVISION = sample(paste0("D", sample(10:55, n, replace = TRUE))), # Random division codes
+
   LOCATION_TYPE = sample(names(location_type_proportions), size = n, replace = TRUE, prob = as.numeric(location_type_proportions)),
-  
   AGE_BIAS = sample(names(age_bias_proportions), size = n, replace = TRUE, prob = as.numeric(age_bias_proportions)),
-  
   MENTAL_OR_PHYSICAL_DISABILITY = sample(names(disability_proportions), size = n, replace = TRUE, prob = as.numeric(disability_proportions)),
-  
   RACE_BIAS = sample(names(race_bias_proportions), size = n, replace = TRUE, prob = as.numeric(race_bias_proportions)),
-  
   ETHNICITY_BIAS = sample(names(ethnicity_bias_proportions), size = n, replace = TRUE, prob = as.numeric(ethnicity_bias_proportions)),
-  
   LANGUAGE_BIAS = sample(names(language_bias_proportions), size = n, replace = TRUE, prob = as.numeric(language_bias_proportions)),
-  
   RELIGION_BIAS = sample(names(religion_bias_proportions), size = n, replace = TRUE, prob = as.numeric(religion_bias_proportions)),
-  
   SEXUAL_ORIENTATION_BIAS = sample(names(sexual_orientation_bias_proportions), size = n, replace = TRUE, prob = as.numeric(sexual_orientation_bias_proportions)),
-  
   GENDER_BIAS = sample(names(gender_bias_proportions), size = n, replace = TRUE, prob = as.numeric(gender_bias_proportions)),
-  
   PRIMARY_OFFENCE = sample(names(primary_offence_proportions), size = n, replace = TRUE, prob = as.numeric(primary_offence_proportions)),
-  
   ARREST_MADE = sample(names(arrest_made_proportions), size = n, replace = TRUE, prob = as.numeric(arrest_made_proportions)),
-  
-  HOOD_158 = sample(100:158, n, replace = TRUE)  # Random neighborhood ID
+  HOOD_158 = sample(100:158, n, replace = TRUE) # Random neighborhood ID
 )
 
 # View the first few rows of the simulated data

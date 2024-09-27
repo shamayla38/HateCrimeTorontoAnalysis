@@ -25,7 +25,6 @@ library(tidyr)
 library(gridExtra)
 library(sf)
 library(ggplot2)
-
 ```
 
 ```{r}
@@ -33,10 +32,9 @@ library(ggplot2)
 #| warning: false
 #| message: false
 
-#Reading the data on hate crimes in Toronto 
+# Reading the data on hate crimes in Toronto
 
 cleaned_data <- read.csv(here("data/analysis_data/cleaned_data.csv"))
-
 ```
 
 # Introduction {#sec-intro}
@@ -111,7 +109,7 @@ library(tibble)
 
 
 race_bias <- tibble(
-  Group = c("Black", "East Asian", "South Asian", "White",  "Black, East Asian"),
+  Group = c("Black", "East Asian", "South Asian", "White", "Black, East Asian"),
   Count = c(296, 63, 22, 19, 7)
 )
 
@@ -134,7 +132,6 @@ ethnicity_bias <- tibble(
   Group = c("Chinese", "Indian", "Israeli", "Ukrainian", "Arab"),
   Count = c(40, 33, 17, 12, 18)
 )
-
 ```
 
 ```{r fig.width=10, fig.height=5}
@@ -148,13 +145,15 @@ ethnicity_bias <- tibble(
 
 
 plot_race_bias <- ggplot(race_bias, aes(x = reorder(Group, -Count), y = Count)) +
-  geom_bar(stat = "identity", fill= "burlywood1") +
+  geom_bar(stat = "identity", fill = "burlywood1") +
   labs(title = "Race Bias", x = "Group", y = "Count") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1),
-        panel.background = element_rect(fill = "white"),
-        plot.title = element_text(size = 9),
-        axis.title.x = element_blank(),  # Change font size for x-axis label
-        axis.title.y = element_text(size = 8))  # Change font size for y-axis label
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.background = element_rect(fill = "white"),
+    plot.title = element_text(size = 9),
+    axis.title.x = element_blank(), # Change font size for x-axis label
+    axis.title.y = element_text(size = 8)
+  ) # Change font size for y-axis label
 
 
 
@@ -162,38 +161,43 @@ plot_race_bias <- ggplot(race_bias, aes(x = reorder(Group, -Count), y = Count)) 
 plot_sexual_orientation_bias <- ggplot(sexual_orientation_bias, aes(x = reorder(Group, -Count), y = Count)) +
   geom_bar(stat = "identity", fill = "burlywood2") +
   labs(title = "Sexual Orientation Bias", x = "Group", y = "Count") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1),
-        panel.background = element_rect(fill = "white"),
-        plot.title = element_text(size = 9),
-        axis.title.x = element_blank(),  # Change font size for x-axis label
-        axis.title.y = element_text(size = 8))  # Change font size for y-axis label
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.background = element_rect(fill = "white"),
+    plot.title = element_text(size = 9),
+    axis.title.x = element_blank(), # Change font size for x-axis label
+    axis.title.y = element_text(size = 8)
+  ) # Change font size for y-axis label
 
 
 
 plot_ethnicity_bias <- ggplot(ethnicity_bias, aes(x = reorder(Group, -Count), y = Count)) +
-  geom_bar(stat = "identity",  fill = "burlywood3") +
+  geom_bar(stat = "identity", fill = "burlywood3") +
   labs(title = "Ethnicity Bias", x = "Group", y = "Count") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1),
-        panel.background = element_rect(fill = "white"),
-        plot.title = element_text(size = 9),
-        axis.title.x = element_blank(),  # Change font size for x-axis label
-        axis.title.y = element_text(size = 8))  # Change font size for y-axis label
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.background = element_rect(fill = "white"),
+    plot.title = element_text(size = 9),
+    axis.title.x = element_blank(), # Change font size for x-axis label
+    axis.title.y = element_text(size = 8)
+  ) # Change font size for y-axis label
 
 
 plot_religion_bias <- ggplot(religion_bias, aes(x = reorder(Group, -Count), y = Count)) +
   geom_bar(stat = "identity", fill = "burlywood4") +
   labs(title = "Religion Bias", x = "Group", y = "Count") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1),
-        panel.background = element_rect(fill = "white"),
-        plot.title = element_text(size = 9),
-        axis.title.x = element_blank(),  # Change font size for x-axis label
-        axis.title.y = element_text(size = 8))  # Change font size for y-axis label
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.background = element_rect(fill = "white"),
+    plot.title = element_text(size = 9),
+    axis.title.x = element_blank(), # Change font size for x-axis label
+    axis.title.y = element_text(size = 8)
+  ) # Change font size for y-axis label
 
-grid.arrange(plot_race_bias,plot_sexual_orientation_bias, plot_ethnicity_bias, plot_religion_bias,
-             ncol = 2,
-             top = textGrob("Hate Crime Frequency by Victim Group and Bias Type", gp = gpar(fontsize = 11)))
-
-
+grid.arrange(plot_race_bias, plot_sexual_orientation_bias, plot_ethnicity_bias, plot_religion_bias,
+  ncol = 2,
+  top = textGrob("Hate Crime Frequency by Victim Group and Bias Type", gp = gpar(fontsize = 11))
+)
 ```
 
 From the summary statistics, we observed that the most frequent hate crimes in Toronto are motivated by bias related to race, ethnicity, religion, or sexual orientation. [@fig-one] breaks down these categories and reveals the specific groups that are most affected. In terms of race, Black communities are disproportionately targeted, with the highest count of hate crimes. Religious bias, particularly antisemitism, remains the most significant in the dataset, with Jewish communities experiencing the highest hate crime rates by far. This trend has been documented consistently in media reports, showing that antisemitic hate crimes have increased in recent years .
@@ -222,7 +226,6 @@ black_bias <- cleaned_data %>%
 # Subsetting for Sexual Orientation Bias
 sexual_orientation_bias <- cleaned_data %>%
   filter(SEXUAL_ORIENTATION_BIAS != "None")
-
 ```
 
 ```{r}
@@ -255,39 +258,47 @@ sexual_orientation_top_offences <- top_5_primary_offences(sexual_orientation_bia
 plot_jewish_bias <- ggplot(jewish_top_offences, aes(x = reorder(PRIMARY_OFFENCE, -n), y = n)) +
   geom_bar(stat = "identity", fill = "lightskyblue1") +
   labs(title = "Religious Bias - Jewish ", x = "Primary Offence", y = "Count") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1),
-        panel.background = element_rect(fill = "white"),
-        plot.title = element_text(size = 9),
-        axis.title.x = element_blank(),
-        axis.title.y = element_text(size = 8))
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.background = element_rect(fill = "white"),
+    plot.title = element_text(size = 9),
+    axis.title.x = element_blank(),
+    axis.title.y = element_text(size = 8)
+  )
 
 plot_muslim_bias <- ggplot(muslim_top_offences, aes(x = reorder(PRIMARY_OFFENCE, -n), y = n)) +
   geom_bar(stat = "identity", fill = "lightskyblue2") +
-  labs(title = "Religious Bias - Muslim", x = "Primary Offence", y = "Count") +scale_x_discrete(labels = function(x) ifelse(x == "Mischief To Religious Property, Educational Institutions, Etc.", "Mischief To Religious Property", x))+
-  theme(axis.text.x = element_text(angle = 45, hjust = 1),
-        panel.background = element_rect(fill = "white"),
-        plot.title = element_text(size = 9),
-        axis.title.x = element_blank(),
-        axis.title.y = element_text(size = 8))
+  labs(title = "Religious Bias - Muslim", x = "Primary Offence", y = "Count") +
+  scale_x_discrete(labels = function(x) ifelse(x == "Mischief To Religious Property, Educational Institutions, Etc.", "Mischief To Religious Property", x)) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.background = element_rect(fill = "white"),
+    plot.title = element_text(size = 9),
+    axis.title.x = element_blank(),
+    axis.title.y = element_text(size = 8)
+  )
 
 plot_black_bias <- ggplot(black_top_offences, aes(x = reorder(PRIMARY_OFFENCE, -n), y = n)) +
   geom_bar(stat = "identity", fill = "lightskyblue3") +
   labs(title = "Race Bias - Black", x = "Primary Offence", y = "Count") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1),
-        panel.background = element_rect(fill = "white"),
-        plot.title = element_text(size = 9),
-        axis.title.x = element_blank(),
-        axis.title.y = element_text(size = 8))
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.background = element_rect(fill = "white"),
+    plot.title = element_text(size = 9),
+    axis.title.x = element_blank(),
+    axis.title.y = element_text(size = 8)
+  )
 
 plot_sexual_orientation_bias <- ggplot(sexual_orientation_top_offences, aes(x = reorder(PRIMARY_OFFENCE, -n), y = n)) +
   geom_bar(stat = "identity", fill = "lightskyblue4") +
   labs(title = "Sexual Orientation Bias", x = "Primary Offence", y = "Count") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1),
-        panel.background = element_rect(fill = "white"),
-        plot.title = element_text(size = 9),
-        axis.title.x = element_blank(),
-        axis.title.y = element_text(size = 8))
-
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.background = element_rect(fill = "white"),
+    plot.title = element_text(size = 9),
+    axis.title.x = element_blank(),
+    axis.title.y = element_text(size = 8)
+  )
 ```
 
 ```{r fig.width=12, fig.height=5}
@@ -300,9 +311,9 @@ plot_sexual_orientation_bias <- ggplot(sexual_orientation_top_offences, aes(x = 
 
 
 grid.arrange(plot_jewish_bias, plot_muslim_bias,
-             ncol = 2,
-             top = textGrob("Distribution of Primary Offence Inficted on Victim Groups", gp = gpar(fontsize = 11)))
-
+  ncol = 2,
+  top = textGrob("Distribution of Primary Offence Inficted on Victim Groups", gp = gpar(fontsize = 11))
+)
 ```
 
 @fig-two illustrates the frequency of different types of hate crimes committed against Jewish and Muslim communities. Since October 7th, 2023, both anti-Semitic and Islamophobic hate crimes have risen sharply due to political unrest. Although the overall number of hate crimes reported against Jewish people is significantly higher, the nature of these crimes tends to be less violent, with "Mischief Under \$5000"—a non-violent offense involving property damage—being the most frequently reported crime.
@@ -322,10 +333,9 @@ This disparity raises important questions: why is "Assault" the most prevalent h
 
 
 grid.arrange(plot_black_bias, plot_sexual_orientation_bias,
-             ncol = 2,
-             top = textGrob("Distribution of Primary Offence Inflicted on Victim Groups", gp = gpar(fontsize = 11)))
-
-
+  ncol = 2,
+  top = textGrob("Distribution of Primary Offence Inflicted on Victim Groups", gp = gpar(fontsize = 11))
+)
 ```
 
 @fig-three highlights that hate crimes targeting the Black and 2SLGBTQ+ communities show "Mischief Under \$5000" as the most common offence, similar to Jewish victims. However, both communities also experience a concerning level of violent crimes, such as assault and bodily harm.In the past 5 years, assualt cases towards black and LGBTQ+ people were almost 40. This data emphasizes that while property-related offences are frequent, physical violence against these groups remains alarmingly prevalent.
@@ -340,13 +350,12 @@ grid.arrange(plot_black_bias, plot_sexual_orientation_bias,
 chinese_bias <- cleaned_data %>%
   filter(ETHNICITY_BIAS == "Chinese")
 
-# Subsetting for Ethinicty Bias: Chinese 
+# Subsetting for Ethinicty Bias: Chinese
 indian_bias <- cleaned_data %>%
   filter(ETHNICITY_BIAS == "Indian")
 
 indian_top_offences <- top_5_primary_offences(indian_bias)
 Chinese_top_offences <- top_5_primary_offences(chinese_bias)
-
 ```
 
 ```{r fig.width=10, fig.height=5}
@@ -360,26 +369,29 @@ Chinese_top_offences <- top_5_primary_offences(chinese_bias)
 plot_indian_bias <- ggplot(indian_top_offences, aes(x = reorder(PRIMARY_OFFENCE, -n), y = n)) +
   geom_bar(stat = "identity", fill = "skyblue3") +
   labs(title = "Ethnicity Bias - Indian", x = "Primary Offence", y = "Count") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1),
-        panel.background = element_rect(fill = "white"),
-        plot.title = element_text(size = 9),
-        axis.title.x = element_blank(),
-        axis.title.y = element_text(size = 8))
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.background = element_rect(fill = "white"),
+    plot.title = element_text(size = 9),
+    axis.title.x = element_blank(),
+    axis.title.y = element_text(size = 8)
+  )
 
 plot_chinese_bias <- ggplot(Chinese_top_offences, aes(x = reorder(PRIMARY_OFFENCE, -n), y = n)) +
   geom_bar(stat = "identity", fill = "skyblue4") +
   labs(title = "Ethnicity Bias - Chinese", x = "Primary Offence", y = "Count") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1),
-        panel.background = element_rect(fill = "white"),
-        plot.title = element_text(size = 9),
-        axis.title.x = element_blank(),
-        axis.title.y = element_text(size = 8))
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.background = element_rect(fill = "white"),
+    plot.title = element_text(size = 9),
+    axis.title.x = element_blank(),
+    axis.title.y = element_text(size = 8)
+  )
 
 grid.arrange(plot_indian_bias, plot_chinese_bias,
-             ncol = 2,
-             top = textGrob("Distribution of Primary Offence Inflicted on Victim Groups", gp = gpar(fontsize = 11)))
-
-
+  ncol = 2,
+  top = textGrob("Distribution of Primary Offence Inflicted on Victim Groups", gp = gpar(fontsize = 11))
+)
 ```
 
 The bar charts show that "Assault" is the most common primary offence against both Indian and Chinese communities, reflecting a high occurrence of violent crimes targeting these groups based on ethnicity bias. Additionally, for Indian victims, "Mischief Under \$5000" and "Uttering Threats - Bodily Harm" are also prevalent, while for Chinese victims, "Mischief Under \$5000" and "Criminal Harassment" are more frequent, suggesting that these communities face a mixture of both physical violence and property-related or threatening incidents.
@@ -418,16 +430,16 @@ assault_summary_long <- assault_summary_long %>%
 plot_assault_bias <- ggplot(assault_summary_long, aes(x = Bias_Category, y = Count)) +
   geom_bar(stat = "identity", fill = "indianred3") +
   labs(title = "Assault Offences by Bias Category", x = "Bias Category", y = "Count") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1),
-        panel.background = element_rect(fill = "white"),
-        plot.title = element_text(size = 10),
-        axis.title.x = element_text(size = 8),
-        axis.title.y = element_text(size = 8)) +
-        scale_x_discrete(labels = c("LGBTQ","Muslim","Indian","Chinese", "Jewish"))
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.background = element_rect(fill = "white"),
+    plot.title = element_text(size = 10),
+    axis.title.x = element_text(size = 8),
+    axis.title.y = element_text(size = 8)
+  ) +
+  scale_x_discrete(labels = c("LGBTQ", "Muslim", "Indian", "Chinese", "Jewish"))
 
 print(plot_assault_bias)
-
-
 ```
 
 [@fig-five] illustrates that the LGBTQ+ community experiences the highest number of assault-related hate crimes compared to other groups, such as Muslims, Indians, Chinese, and Jewish individuals. Here, assaults encompass all types of physical violence, including aggravated assault, assault causing bodily harm, and common assault. The much lower assault counts for other groups could indicate different patterns of hate crimes, where other forms like harassment or vandalism are more common.
@@ -437,7 +449,7 @@ print(plot_assault_bias)
 ```{r fig.width=12, fig.height=4}
 #| echo: false
 #| label: fig-six
-#| warning:  false 
+#| warning:  false
 #| fig-cap: "Trend of Hate Crime Occurence in Past 5 Years"
 #| fig.pos: 'H'
 
@@ -458,21 +470,23 @@ quarterly_hate_crimes <- cleaned_data %>%
 quarterly_plot <- ggplot(quarterly_hate_crimes, aes(x = Year_Quarter, y = Count, group = 1)) +
   geom_line(color = "indianred", size = 1) +
   geom_point(color = "indianred") +
-  labs(title = "Hate Crimes Per Quarter Over the Last 5 Years",
-       x = "Year-Quarter",
-       y = "Number of Hate Crimes") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1),
-        panel.background = element_rect(fill = "white"),
-        panel.grid.major =  element_blank(),
-        panel.grid.minor = element_line(color = "grey90"),
-        plot.title = element_text(size = 14,hjust=0.5),
-        axis.title.x = element_text(size = 10),
-        axis.title.y = element_text(size = 10))
+  labs(
+    title = "Hate Crimes Per Quarter Over the Last 5 Years",
+    x = "Year-Quarter",
+    y = "Number of Hate Crimes"
+  ) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.background = element_rect(fill = "white"),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_line(color = "grey90"),
+    plot.title = element_text(size = 14, hjust = 0.5),
+    axis.title.x = element_text(size = 10),
+    axis.title.y = element_text(size = 10)
+  )
 
 # Print the plot
 print(quarterly_plot)
-
-
 ```
 
 [@fig-six] the trend of reported hate crimes in Toronto over the past five years, segmented by quarter. The number of hate crimes fluctuates, with noticeable spikes, particularly in 2020 and 2023. There is a significant peak in mid-2020, which coincides with the global rise of racial and ethnic tensions during the pandemic. Another sharp increase is seen in 2023, reflecting a recent surge in hate crimes. This increase can be attributed to the tension created by the Israel-Hamas conflict in the last two quarters of 2023.
@@ -480,7 +494,7 @@ print(quarterly_plot)
 ```{r fig.width=12, fig.height=4}
 #| echo: false
 #| label: fig-seven
-#| warning:  false 
+#| warning:  false
 #| fig-cap: "Trend of Hate Crime Occurence in Past 5 Years"
 #| fig.pos: 'H'
 
@@ -494,8 +508,8 @@ cleaned_data <- cleaned_data %>%
 # Step 2: Group and summarize data for each bias category (Jewish, Muslim, Sexual Orientation, Indian, Chinese, Black)
 hate_crimes_summary <- cleaned_data %>%
   filter(RELIGION_BIAS %in% c("Jewish", "Muslim") |
-           ETHNICITY_BIAS %in% c("Indian", "Chinese", "Black") |
-           !is.na(SEXUAL_ORIENTATION_BIAS)) %>%
+    ETHNICITY_BIAS %in% c("Indian", "Chinese", "Black") |
+    !is.na(SEXUAL_ORIENTATION_BIAS)) %>%
   mutate(Bias_Category = case_when(
     RELIGION_BIAS == "Jewish" ~ "Jewish",
     RELIGION_BIAS == "Muslim" ~ "Muslim",
@@ -503,9 +517,9 @@ hate_crimes_summary <- cleaned_data %>%
     ETHNICITY_BIAS == "Chinese" ~ "Chinese",
     RACE_BIAS == "Black" ~ "Black",
     SEXUAL_ORIENTATION_BIAS != "None" ~ "LGBTQ",
-    TRUE ~ NA_character_  # This will assign NA to any rows that don't meet the conditions
+    TRUE ~ NA_character_ # This will assign NA to any rows that don't meet the conditions
   )) %>%
-  filter(!is.na(Bias_Category)) %>%  # Remove rows with NA Bias_Category
+  filter(!is.na(Bias_Category)) %>% # Remove rows with NA Bias_Category
   group_by(Year_Quarter, Bias_Category) %>%
   summarise(Count = n()) %>%
   ungroup()
@@ -516,21 +530,23 @@ plot_hate_crimes <- ggplot(hate_crimes_summary, aes(x = Year_Quarter, y = Count,
   geom_line(size = 0.5) +
   geom_point(size = 2) +
   scale_color_manual(values = c("indianred3", "dodgerblue3", "darkgreen", "gold3", "purple3", "black")) + # Assign colors to each bias category
-  labs(title = "Hate Crimes Per Quarter by Bias Category",
-       x = "Year-Quarter",
-       y = "Number of Hate Crimes") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1),
-        panel.background = element_rect(fill = "white"),
-        panel.grid.major =  element_blank(),
-        panel.grid.minor = element_line(color = "grey90"),
-        plot.title = element_text(size = 14, hjust = 0.5),
-        axis.title.x = element_text(size = 10),
-        axis.title.y = element_text(size = 10))
+  labs(
+    title = "Hate Crimes Per Quarter by Bias Category",
+    x = "Year-Quarter",
+    y = "Number of Hate Crimes"
+  ) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.background = element_rect(fill = "white"),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_line(color = "grey90"),
+    plot.title = element_text(size = 14, hjust = 0.5),
+    axis.title.x = element_text(size = 10),
+    axis.title.y = element_text(size = 10)
+  )
 
 # Step 4: Print the plot
 print(plot_hate_crimes)
-
-
 ```
 
 [@fig-seven] shows the trends in hate crimes against various bias categories over time. Jewish communities are consistently the most targeted, with a sharp spike in hate crimes towards the end of the timeline. Hate crimes towards LGBTQ+ people tend to rise every second quarter of the year. This is interesting because, June is pride month. Muslim and Black communities show more variability but still exhibit periodic increases. Meanwhile, hate crimes against Chinese and Indian groups remain relatively low but constant, with occasional small surges. The general upward trend for most bias categories highlights a concerning increase in hate crimes, particularly in the last quarter of the analyzed period.
@@ -555,14 +571,13 @@ In this section, we leverage maps to look at which areas hate crimes tend to occ
 
 library(sf)
 neighborhoods <- st_read(here("data/raw_data/DataShape"))
-
 ```
 
 ```{r}
 #| echo: false
 #| warning: false
 #| message: false
-# Preparing shapefile data for merge. 
+# Preparing shapefile data for merge.
 # Remove text within parentheses from the neighborhood names in cleaned_data
 
 cleaned_data$NEIGHBOURHOOD_158 <- gsub("\\s*\\([^\\)]+\\)", "", cleaned_data$NEIGHBOURHOOD_158)
@@ -578,19 +593,18 @@ neighborhoods$AREA_NA7 <- tolower(trimws(neighborhoods$AREA_NA7))
 #| message: false
 
 
-#renaming some neighbourhoods that appear differently in data set. 
+# renaming some neighbourhoods that appear differently in data set.
 
 cleaned_data$NEIGHBOURHOOD_158 <- recode(cleaned_data$NEIGHBOURHOOD_158,
-                                         "parkwoods-o'connor hills" = "parkwoods-o'connor hills",
-                                         "lambton baby point" = "lambton baby point",
-                                         "beechborough-greenbrook" = "beechborough-greenbrook",
-                                         "brookhaven-amesbury" = "brookhaven-amesbury",
-                                         "willowridge-martingrove-richview" = "willowridge-martingrove-richview",
-                                         "rexdale-kipling" = "rexdale-kipling",
-                                         "thistletown-beaumond heights" = "thistletown-beaumond heights",
-                                         "mount olive-silverstone-jamestown" = "mount olive-silverstone-jamestown"
+  "parkwoods-o'connor hills" = "parkwoods-o'connor hills",
+  "lambton baby point" = "lambton baby point",
+  "beechborough-greenbrook" = "beechborough-greenbrook",
+  "brookhaven-amesbury" = "brookhaven-amesbury",
+  "willowridge-martingrove-richview" = "willowridge-martingrove-richview",
+  "rexdale-kipling" = "rexdale-kipling",
+  "thistletown-beaumond heights" = "thistletown-beaumond heights",
+  "mount olive-silverstone-jamestown" = "mount olive-silverstone-jamestown"
 )
-
 ```
 
 ```{r}
@@ -600,7 +614,6 @@ cleaned_data$NEIGHBOURHOOD_158 <- recode(cleaned_data$NEIGHBOURHOOD_158,
 
 cleaned_data$NEIGHBOURHOOD_158 <- tolower(gsub("[^[:alnum:] ]", "", cleaned_data$NEIGHBOURHOOD_158))
 neighborhoods$AREA_NA7 <- tolower(gsub("[^[:alnum:] ]", "", neighborhoods$AREA_NA7))
-
 ```
 
 ```{r}
@@ -608,7 +621,6 @@ neighborhoods$AREA_NA7 <- tolower(gsub("[^[:alnum:] ]", "", neighborhoods$AREA_N
 # Create a new dataset without "nsa" neighborhoods
 filtered_cleaned_data <- cleaned_data %>%
   filter(NEIGHBOURHOOD_158 != "nsa")
-
 ```
 
 ```{r}
@@ -621,8 +633,9 @@ crime_count_by_neighbourhood <- filtered_cleaned_data %>%
   group_by(NEIGHBOURHOOD_158) %>%
   summarise(Crime_Count = n())
 # Join the crime data with the neighborhood shapefile
-map_data <- left_join(neighborhoods, crime_count_by_neighbourhood, 
-                      by = c("AREA_NA7" = "NEIGHBOURHOOD_158"))
+map_data <- left_join(neighborhoods, crime_count_by_neighbourhood,
+  by = c("AREA_NA7" = "NEIGHBOURHOOD_158")
+)
 
 # Replace NA values in Crime_Count with 0
 map_data$Crime_Count[is.na(map_data$Crime_Count)] <- 0
@@ -639,7 +652,7 @@ ggplot(data = map_data) +
   scale_fill_gradient(low = "lightblue", high = "red", name = "Hate Crimes") +
   labs(title = "Distribution of Hate Crimes Across Toronto Neighborhoods", x = "Longitude", y = "Latitude") +
   theme_minimal() +
-  
+
   # Manually adding region labels
   geom_text(aes(x = -79.38, y = 43.65, label = "Old Toronto"), size = 4, color = "black") +
   geom_text(aes(x = -79.55, y = 43.64, label = "Etobicoke"), size = 4, color = "black") +
@@ -647,7 +660,6 @@ ggplot(data = map_data) +
   geom_text(aes(x = -79.42, y = 43.75, label = "North York"), size = 4, color = "black") +
   geom_text(aes(x = -79.34, y = 43.7, label = "East York"), size = 4, color = "black") +
   geom_text(aes(x = -79.20, y = 43.80, label = "Scarborough"), size = 4, color = "black")
-
 ```
 
 ```{r fig.width=8, fig.height=4}
@@ -667,8 +679,9 @@ crime_count_by_neighbourhood_so <- filtered_cleaned_data %>%
   summarise(Crime_Count = n())
 
 # Join the crime data with the neighborhood shapefile
-map_data_so <- left_join(neighborhoods, crime_count_by_neighbourhood_so, 
-                         by = c("AREA_NA7" = "NEIGHBOURHOOD_158"))
+map_data_so <- left_join(neighborhoods, crime_count_by_neighbourhood_so,
+  by = c("AREA_NA7" = "NEIGHBOURHOOD_158")
+)
 
 # Replace NA values in Crime_Count with 0
 map_data_so$Crime_Count[is.na(map_data_so$Crime_Count)] <- 0
@@ -679,7 +692,7 @@ ggplot(data = map_data_so) +
   scale_fill_gradient(low = "lightblue", high = "red", name = "Hate Crimes") +
   labs(title = "Distribution of Homophobic Hate Crimes Across Toronto Neighborhoods", x = "Longitude", y = "Latitude") +
   theme_minimal() +
-  
+
   # Manually adding region labels
   geom_text(aes(x = -79.38, y = 43.65, label = "Old Toronto"), size = 4, color = "black") +
   geom_text(aes(x = -79.55, y = 43.64, label = "Etobicoke"), size = 4, color = "black") +
@@ -687,7 +700,6 @@ ggplot(data = map_data_so) +
   geom_text(aes(x = -79.42, y = 43.75, label = "North York"), size = 4, color = "black") +
   geom_text(aes(x = -79.34, y = 43.7, label = "East York"), size = 4, color = "black") +
   geom_text(aes(x = -79.20, y = 43.80, label = "Scarborough"), size = 4, color = "black")
-
 ```
 
 ```{r fig.width=8, fig.height=4}
@@ -702,8 +714,9 @@ crime_count_by_neighbourhood_mu <- filtered_cleaned_data %>%
   summarise(Crime_Count = n())
 
 # Join the crime data with the neighborhood shapefile
-map_data_mu <- left_join(neighborhoods, crime_count_by_neighbourhood_mu, 
-                         by = c("AREA_NA7" = "NEIGHBOURHOOD_158"))
+map_data_mu <- left_join(neighborhoods, crime_count_by_neighbourhood_mu,
+  by = c("AREA_NA7" = "NEIGHBOURHOOD_158")
+)
 
 # Replace NA values in Crime_Count with 0
 map_data_mu$Crime_Count[is.na(map_data_mu$Crime_Count)] <- 0
@@ -714,7 +727,7 @@ ggplot(data = map_data_mu) +
   scale_fill_gradient(low = "lightblue", high = "red", name = "Hate Crimes") +
   labs(title = "Distribution of Hate Crimes Against Muslims Across Toronto Neighborhoods", x = "Longitude", y = "Latitude") +
   theme_minimal() +
-  
+
   # Manually adding region labels
   annotate("text", x = -79.38, y = 43.65, label = "Old Toronto", size = 4, color = "black") +
   annotate("text", x = -79.55, y = 43.64, label = "Etobicoke", size = 4, color = "black") +
@@ -737,8 +750,9 @@ crime_count_by_neighbourhood_mu <- filtered_cleaned_data %>%
   summarise(Crime_Count = n())
 
 # Join the crime data with the neighborhood shapefile
-map_data_mu <- left_join(neighborhoods, crime_count_by_neighbourhood_mu, 
-                         by = c("AREA_NA7" = "NEIGHBOURHOOD_158"))
+map_data_mu <- left_join(neighborhoods, crime_count_by_neighbourhood_mu,
+  by = c("AREA_NA7" = "NEIGHBOURHOOD_158")
+)
 
 # Replace NA values in Crime_Count with 0
 map_data_mu$Crime_Count[is.na(map_data_mu$Crime_Count)] <- 0
@@ -749,16 +763,15 @@ ggplot(data = map_data_mu) +
   scale_fill_gradient(low = "lightblue", high = "red", name = "Hate Crimes") +
   labs(title = "Distribution of Hate Crimes Against Black People Across Toronto Neighborhoods", x = "Longitude", y = "Latitude") +
   theme_minimal() +
-  
 
-   # Manually adding region labels
+
+  # Manually adding region labels
   annotate("text", x = -79.38, y = 43.65, label = "Old Toronto", size = 4, color = "black") +
   annotate("text", x = -79.55, y = 43.64, label = "Etobicoke", size = 4, color = "black") +
   annotate("text", x = -79.46, y = 43.685, label = "York", size = 4, color = "black") +
   annotate("text", x = -79.42, y = 43.75, label = "North York", size = 4, color = "black") +
   annotate("text", x = -79.34, y = 43.7, label = "East York", size = 4, color = "black") +
   annotate("text", x = -79.20, y = 43.80, label = "Scarborough", size = 4, color = "black")
-
 ```
 
 ```{r fig.width=8, fig.height=4}
@@ -774,8 +787,9 @@ crime_count_by_neighbourhood_mu <- filtered_cleaned_data %>%
   summarise(Crime_Count = n())
 
 # Join the crime data with the neighborhood shapefile
-map_data_mu <- left_join(neighborhoods, crime_count_by_neighbourhood_mu, 
-                         by = c("AREA_NA7" = "NEIGHBOURHOOD_158"))
+map_data_mu <- left_join(neighborhoods, crime_count_by_neighbourhood_mu,
+  by = c("AREA_NA7" = "NEIGHBOURHOOD_158")
+)
 
 # Replace NA values in Crime_Count with 0
 map_data_mu$Crime_Count[is.na(map_data_mu$Crime_Count)] <- 0
@@ -786,7 +800,7 @@ ggplot(data = map_data_mu) +
   scale_fill_gradient(low = "lightblue", high = "red", name = "Hate Crime Occurences") +
   labs(title = "Distribution of Hate Crimes Against Jewish Across Toronto Neighborhoods", x = "Longitude", y = "Latitude") +
   theme_minimal() +
-  
+
   # Manually adding region labels
   annotate("text", x = -79.38, y = 43.65, label = "Old Toronto", size = 4, color = "black") +
   annotate("text", x = -79.55, y = 43.64, label = "Etobicoke", size = 4, color = "black") +

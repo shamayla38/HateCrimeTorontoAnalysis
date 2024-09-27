@@ -3,14 +3,14 @@
 # Script Name: 02-test_data.R
 # Author: Shamayla Durrin Islam
 # Date: 22 September 2024
-#contact: Shamayla.islam@mail.utoronto.ca
+# contact: Shamayla.islam@mail.utoronto.ca
 # Description:
 # This script performs a comparison between the actual dataset and the simulated dataset
 # by generating side-by-side bar plots for key variables such as RACE_BIAS, PRIMARY_OFFENCE,
 # LOCATION_TYPE, and ARREST_MADE. The script also verifies the consistency of OCCURRENCE_DATE
 # and REPORTED_DATE ranges between the actual and simulated data.
 #
-# The comparison shows that the simulated data carefully resembles the actual data in terms 
+# The comparison shows that the simulated data carefully resembles the actual data in terms
 # of the distributions of key variables. All plots are saved in the 'outputs' folder:
 # - race_bias_comparison.png
 # - primary_offence_comparison.png
@@ -36,16 +36,18 @@ create_comparison_plot <- function(actual_col, simulated_col, col_name) {
   # Create a data frame for plotting
   actual_df <- data.frame(Value = actual_col, Type = "Actual Data")
   simulated_df <- data.frame(Value = simulated_col, Type = "Simulated Data")
-  
+
   combined_df <- rbind(actual_df, simulated_df)
-  
+
   # Generate the comparison plot
   ggplot(combined_df, aes(x = Value, fill = Type)) +
     geom_bar(position = "dodge", alpha = 0.7) +
     theme_minimal() +
-    labs(title = paste("Distribution of", col_name),
-         x = col_name,
-         y = "Count") +
+    labs(
+      title = paste("Distribution of", col_name),
+      x = col_name,
+      y = "Count"
+    ) +
     theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
     scale_fill_manual(values = c("Actual Data" = "blue", "Simulated Data" = "red"))
 }
@@ -95,5 +97,3 @@ print(race_bias_plot)
 print(primary_offence_plot)
 print(location_type_plot)
 print(arrest_made_plot)
-
-

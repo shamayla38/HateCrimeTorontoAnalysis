@@ -24,10 +24,10 @@ raw_data$REPORTED_DATE <- as.Date(raw_data$REPORTED_DATE, format = "%Y-%m-%d")
 raw_data$LOCATION_TYPE[is.na(raw_data$LOCATION_TYPE)] <- "Unknown"
 
 # 3. Convert OCCURRENCE_TIME and REPORTED_TIME to HH:MM format (assuming they are in HHMM integer format)
-raw_data$OCCURRENCE_TIME <- sprintf("%04d", raw_data$OCCURRENCE_TIME)  # Ensure 4 digits
+raw_data$OCCURRENCE_TIME <- sprintf("%04d", raw_data$OCCURRENCE_TIME) # Ensure 4 digits
 raw_data$OCCURRENCE_TIME <- substr(raw_data$OCCURRENCE_TIME, 1, 2) %>% paste0(":", substr(raw_data$OCCURRENCE_TIME, 3, 4))
 
-raw_data$REPORTED_TIME <- sprintf("%04d", raw_data$REPORTED_TIME)  # Ensure 4 digits
+raw_data$REPORTED_TIME <- sprintf("%04d", raw_data$REPORTED_TIME) # Ensure 4 digits
 raw_data$REPORTED_TIME <- substr(raw_data$REPORTED_TIME, 1, 2) %>% paste0(":", substr(raw_data$REPORTED_TIME, 3, 4))
 
 # 4. Ensure ARREST_MADE contains only "YES" or "NO"
@@ -45,4 +45,3 @@ head(raw_data)
 
 # Summary of the cleaned dataset
 summary(raw_data)
-
